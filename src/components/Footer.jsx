@@ -126,7 +126,7 @@ export default function Footer() {
             </div>
             <div className="space-y-2">
               <p className="font-mono text-xs text-white/30">
-                nexus2025@nit.ac.in
+                odyssey2025@nit.ac.in
               </p>
               <p className="font-mono text-xs text-white/30">
                 +91 98765 43210

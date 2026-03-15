@@ -29,35 +29,18 @@ export default function Dashboard() {
 
   useEffect(() => {
 
-    if (!currentUser || !userProfile) return;
-
-    if (!userProfile.festID) return;
+    if (!currentUser || !userProfile?.festID) return;
 
     const q = query(
       collection(db, "registrations"),
-      where("leaderFestId", "==", userProfile.festID)
+      where("teamFestIds", "array-contains", userProfile.festID)
     );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-
-      const events = [];
-
-      for (const regDoc of snapshot.docs) {
-
-        const reg = regDoc.data();
-
-        const eventSnap = await getDoc(doc(db, "events", reg.eventId));
-
-        if (eventSnap.exists()) {
-
-          events.push({
-            id: eventSnap.id,
-            ...eventSnap.data()
-          });
-
-        }
-
-      }
+      const events = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
       setRegisteredEvents(events);
       setLoading(false);
@@ -67,52 +50,6 @@ export default function Dashboard() {
     return () => unsubscribe();
 
   }, [currentUser, userProfile]);
-
-
-
-
-  // LOAD EVENTS USER REGISTERED FOR
-  async function loadRegisteredEvents() {
-
-    const q = query(
-      collection(db, "registrations"),
-      where("leaderFestId", "==", userProfile.festID)
-    );
-
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-
-      const events = [];
-
-      for (const docSnap of snapshot.docs) {
-
-        const reg = docSnap.data();
-
-        try {
-
-          const eventDoc = await getDoc(doc(db, "events", reg.eventId));
-
-          if (eventDoc.exists()) {
-
-            events.push({
-              id: eventDoc.id,
-              ...eventDoc.data()
-            });
-
-          }
-
-        } catch (err) {
-          console.error(err);
-        }
-
-      }
-
-      setRegisteredEvents(events);
-      setLoading(false);
-
-    });
-
-    return unsubscribe;
-  }
 
 
 
@@ -276,21 +213,28 @@ export default function Dashboard() {
                     <div>
 
                       <h3 className="text-white text-sm">
-                        {event.title}
+                        {event.eventName || event.title}
                       </h3>
 
-                      <p className="text-xs text-white/40 mt-1">
-                        📅 {formatDate(event.date)}
-                      </p>
-
-                      <p className="text-xs text-white/40">
-                        📍 {event.venue}
+                      <p className="text-xs text-purple-400 mt-1">
+                        Team: {event.teamName || "Individual"}
                       </p>
 
                     </div>
 
-                    <span className="text-neon-cyan text-xs">
-                      Confirmed
+                    <span
+                      className={`text-xs ${event.paymentStatus === "confirmed"
+                        ? "text-green-400"
+                        : event.paymentStatus === "rejected"
+                          ? "text-red-400"
+                          : "text-yellow-400"
+                        }`}
+                    >
+                      {event.paymentStatus === "confirmed"
+                        ? "Confirmed"
+                        : event.paymentStatus === "rejected"
+                          ? "Payment Rejected"
+                          : "Payment Processing"}
                     </span>
 
                   </div>
@@ -343,9 +287,9 @@ export default function Dashboard() {
       </div>
 
     </div>
-    
+
 
   );
-  
+
 }
 

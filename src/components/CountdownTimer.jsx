@@ -59,7 +59,7 @@ export default function CountdownTimer({ targetDate = FEST_DATE }) {
           animate={{ opacity: [0.7, 1, 0.7] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          NEXUS IS LIVE NOW
+          ODYSSEY IS LIVE NOW
         </motion.p>
       </div>
     );

@@ -6,11 +6,13 @@ import { useAuth } from "../context/AuthContext";
 import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 
+
 const CATEGORIES = ["All", "Hackathon", "AI/ML", "Workshop", "Robotics", "Gaming"];
 
 export default function Events() {
 
-  const { currentUser } = useAuth();
+
+  const { currentUser, userProfile } = useAuth();
 
   const [events, setEvents] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -42,24 +44,27 @@ export default function Events() {
   // FETCH USER REGISTRATIONS (REALTIME)
   useEffect(() => {
 
-    if (!currentUser?.festId) return;
+    if (!userProfile?.festID) return;
 
     const q = query(
       collection(db, "registrations"),
-      where("festId", "==", currentUser.festId)
+      where("teamFestIds", "array-contains", userProfile.festID)
     );
 
     const unsubscribe = onSnapshot(q, (snap) => {
 
-      const events = snap.docs.map((doc) => doc.data().eventId);
+      const regs = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-      setRegisteredEvents(events);
+      setRegisteredEvents(regs);
 
     });
 
     return () => unsubscribe();
 
-  }, [currentUser]);
+  }, [userProfile]);
 
   // FILTER EVENTS
   useEffect(() => {
@@ -119,11 +124,10 @@ export default function Events() {
                 key={cat}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 font-mono text-xs tracking-widest uppercase ${
-                  activeCategory === cat
-                    ? "bg-neon-blue text-dark-900 font-bold"
-                    : "border border-white/10 text-white/40"
-                }`}
+                className={`px-4 py-1.5 font-mono text-xs tracking-widest uppercase ${activeCategory === cat
+                  ? "bg-neon-blue text-dark-900 font-bold"
+                  : "border border-white/10 text-white/40"
+                  }`}
               >
                 {cat}
               </motion.button>

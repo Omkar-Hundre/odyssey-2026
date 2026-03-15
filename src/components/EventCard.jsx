@@ -14,7 +14,11 @@ export default function EventCard({ event, registeredEvents = [] }) {
   );
 
   // Check if user already registered for this event
-  const alreadyRegistered = registeredEvents.includes(event.id);
+  const registration = registeredEvents.find(
+    (r) => r.eventId === event.id
+  );
+
+  const alreadyRegistered = !!registration;
 
   function handleRegister() {
     if (!currentUser) {
@@ -80,56 +84,47 @@ export default function EventCard({ event, registeredEvents = [] }) {
             : event.description}
         </p>
 
-        {/* Meta */}
-        <div className="grid grid-cols-2 gap-2 text-xs text-white/40">
-          <div>📅 {formatDate(event.date)}</div>
-          <div>🕐 {event.time}</div>
-          <div>📍 {event.venue}</div>
-          <div>🏆 {event.prize}</div>
+        <div className="flex justify-between text-xs text-white/40 mt-2">
+
+          <span className="font-semibold text-white">
+            👥 Team: {event.minTeamSize === event.maxTeamSize
+              ? event.minTeamSize
+              : `${event.minTeamSize}-${event.maxTeamSize}`}
+          </span>
+
+          <span className="font-semibold text-white">
+            💰 ₹{event.registrationFee || 0}
+          </span>
+
         </div>
 
-        {/* Registration bar */}
-        <div>
-          <div className="flex justify-between text-xs mb-1">
-            <span className="text-white/30">Registrations</span>
-            <span className="text-neon-blue">
-              {event.registrations}/{event.maxRegistrations}
-            </span>
-          </div>
 
-          <div className="h-1 bg-dark-600 overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${fillPercent}%` }}
-              transition={{ duration: 1 }}
-              className="h-full bg-gradient-to-r from-cyan-400 to-purple-500"
-            />
-          </div>
-        </div>
 
         {/* Register Button */}
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={handleRegister}
-          disabled={
-            alreadyRegistered ||
-            event.registrations >= event.maxRegistrations
-          }
-          className={`mt-2 w-full py-2.5 text-xs font-semibold uppercase tracking-widest ${
-            alreadyRegistered
-              ? "border border-green-500 text-green-400"
-              : event.registrations >= event.maxRegistrations
-              ? "border border-white/10 text-white/20 cursor-not-allowed"
-              : "btn-neon-filled"
-          }`}
-        >
-          {alreadyRegistered
-            ? "REGISTERED"
-            : event.registrations >= event.maxRegistrations
-            ? "FULL"
-            : "Register Now"}
-        </motion.button>
+        {alreadyRegistered ? (
 
+          <div className="mt-2 w-full py-3 text-center border border-green-500 text-green-400 text-xs">
+            REGISTERED
+
+            {registration?.teamName && (
+              <div className="text-white/60 text-xs mt-1">
+                Team: {registration.teamName}
+              </div>
+            )}
+
+          </div>
+
+        ) : (
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleRegister}
+            className="btn-neon-filled mt-2 w-full py-2.5 text-xs font-semibold uppercase tracking-widest"
+          >
+            Register Now
+          </motion.button>
+
+        )}
       </div>
     </motion.div>
   );

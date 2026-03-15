@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useParams, useNavigate } from "react-router-dom";
@@ -23,7 +23,11 @@ export default function RegisterEvent() {
 
     const leader = userProfile;
 
-    const [teamFestIds, setTeamFestIds] = useState(["", "", ""]);
+    const [event, setEvent] = useState(null);
+    const [selectedCoordinator, setSelectedCoordinator] = useState(null);
+
+    const [teamName, setTeamName] = useState("");
+    const [teamFestIds, setTeamFestIds] = useState([]);
     const [teamDetails, setTeamDetails] = useState([]);
 
     const [utr, setUtr] = useState("");
@@ -33,7 +37,31 @@ export default function RegisterEvent() {
 
     if (!leader) return null;
 
-    // VERIFY TEAM MEMBER
+    useEffect(() => {
+
+        async function fetchEvent() {
+
+            const eventRef = doc(db, "events", eventId);
+            const eventSnap = await getDoc(eventRef);
+
+            if (eventSnap.exists()) {
+
+                const data = eventSnap.data();
+                setEvent(data);
+
+                const slots = (data.maxTeamSize || 1) - 1;
+
+                setTeamFestIds(Array(slots).fill(""));
+                setTeamDetails(Array(slots).fill(null));
+
+            }
+
+        }
+
+        fetchEvent();
+
+    }, [eventId]);
+
     async function fetchTeamMember(index, festId) {
 
         if (!festId) {
@@ -67,20 +95,48 @@ export default function RegisterEvent() {
             alert("Fest ID not found");
 
         }
+
     }
 
     function handleFestIdChange(index, value) {
 
         const updated = [...teamFestIds];
         updated[index] = value;
-
         setTeamFestIds(updated);
+
     }
 
-    // SUBMIT REGISTRATION
     async function handleSubmit(e) {
 
         e.preventDefault();
+
+        if (!event) return;
+
+        if (!teamName.trim()) {
+            alert("Enter team name");
+            return;
+        }
+
+        const validMembers = teamDetails.filter(Boolean).length;
+        const totalTeamSize = validMembers + 1;
+
+        const minSize = event.minTeamSize || 1;
+        const maxSize = event.maxTeamSize || 1;
+
+        if (totalTeamSize < minSize) {
+            alert(`Minimum team size is ${minSize}`);
+            return;
+        }
+
+        if (totalTeamSize > maxSize) {
+            alert(`Maximum team size is ${maxSize}`);
+            return;
+        }
+
+        if (!utr) {
+            alert("Enter UTR number");
+            return;
+        }
 
         if (!screenshot) {
             alert("Upload payment screenshot");
@@ -91,7 +147,6 @@ export default function RegisterEvent() {
 
         try {
 
-            // Upload screenshot
             const formData = new FormData();
             formData.append("file", screenshot);
             formData.append("upload_preset", "odyssey_upload");
@@ -114,7 +169,6 @@ export default function RegisterEvent() {
 
             const imageURL = data.secure_url;
 
-            // CHECK DUPLICATE
             const q = query(
                 collection(db, "registrations"),
                 where("eventId", "==", eventId),
@@ -128,130 +182,250 @@ export default function RegisterEvent() {
                 setLoading(false);
                 return;
             }
+            const allFestIds = [
+                leader.festID,
+                ...teamDetails.filter(Boolean).map(member => member.festID)
+            ];
 
-            // GET EVENT DATA
-            const eventRef = doc(db, "events", eventId);
-            const eventSnap = await getDoc(eventRef);
-
-            console.log("EVENT SNAP:", eventSnap.exists());
-
-            if (!eventSnap.exists()) {
-                alert("Event not found");
-                return;
-            }
-
-            const eventData = eventSnap.data();
-
-            console.log("EVENT DATA:", eventData);
-            console.log("EVENT TITLE:", eventData.title);
-
-            // THEN SAVE REGISTRATION
             await addDoc(collection(db, "registrations"), {
+
                 eventId: eventId,
-                eventName: eventData.eventName,
+
+                eventName: event.eventName || event.title,
+                eventVenue: event.venue,
+                registrationFee: event.registrationFee,
+
+                teamName: teamName,
+
                 leaderName: leader.name,
                 leaderFestId: leader.festID,
+
+                teamFestIds: allFestIds,   // ⭐ ADD THIS
+                
+
+                teamMembers: teamDetails
+                    .filter(Boolean)
+                    .map(member => ({
+                        name: member.name,
+                        festID: member.festID
+                    })),
+
                 utr: utr,
                 paymentScreenshot: imageURL,
-                status: "pending",
+
+                paymentStatus: "pending",
+                checkedIn: false,
+
                 createdAt: new Date()
+
             });
+
             alert("Registration successful");
-            navigate("/dashboard")
+            navigate("/dashboard");
 
         } catch (error) {
+
             console.error(error);
             alert("Registration failed");
+
         }
 
         setLoading(false);
-    }
 
+    }
 
     return (
 
-        <div className="min-h-screen flex justify-center items-center grid-bg">
+        <div
+            className="min-h-screen bg-cover bg-center flex justify-center items-start pt-20"
+            style={{
+                backgroundImage: event ? `url(${event.poster})` : "none"
+            }}
+        >
 
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-8 w-full max-w-xl"
-            >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
-                <h2 className="text-2xl font-bold mb-6 neon-text">
-                    Event Registration
-                </h2>
+            <div className="relative max-w-6xl w-full grid md:grid-cols-2 gap-8">
 
-                <div className="mb-6 border border-white/10 p-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass-card p-8"
 
-                    <p><b>Leader:</b> {leader.name}</p>
-                    <p><b>Fest ID:</b> {leader.festID}</p>
-                    <p><b>College:</b> {leader.college}</p>
+                >
+
+                    <h2 className="text-xl font-bold mb-6 neon-text">
+                        Event Registration
+                    </h2>
+
+                    <div className="mb-6 border border-white/10 p-4 text-sm">
+
+                        <p><b>Leader:</b> {leader.name}</p>
+                        <p><b>Fest ID:</b> {leader.festID}</p>
+                        <p><b>College:</b> {leader.college}</p>
+
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+
+                        <input
+                            placeholder="Team Name"
+                            value={teamName}
+                            onChange={(e) => setTeamName(e.target.value)}
+                            className="input-neon w-full text-sm"
+                            required
+                        />
+
+                        <p className="text-xs text-yellow-400">
+                            Minimum members required: {(event?.minTeamSize ?? 1) - 1}
+                        </p>
+
+                        {teamFestIds.map((id, index) => (
+
+                            <div key={index} className="flex flex-col gap-2">
+
+                                <div className="flex gap-2">
+
+                                    <input
+                                        placeholder={`Member ${index + 2} Fest ID`}
+                                        value={id}
+                                        onChange={(e) =>
+                                            handleFestIdChange(index, e.target.value)
+                                        }
+                                        className="input-neon w-full text-sm"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => fetchTeamMember(index, id)}
+                                        className="btn-neon px-4 text-sm"
+
+                                    >
+
+                                        Verify </button>
+
+                                </div>
+
+                                {teamDetails[index] && (
+
+                                    <p className="text-xs text-green-400">
+                                        ✔ {teamDetails[index].name} — {teamDetails[index].college}
+                                    </p>
+                                )}
+
+                            </div>
+                        ))}
+
+                        <input
+                            placeholder="UTR Number"
+                            value={utr}
+                            onChange={(e) => setUtr(e.target.value)}
+                            className="input-neon w-full text-sm"
+                            required
+                        />
+
+                        <input
+                            type="file"
+                            onChange={(e) => setScreenshot(e.target.files[0])}
+                            className="text-white text-sm"
+                            required
+                        />
+
+                        <button
+                            disabled={loading}
+                            className="btn-neon-filled w-full py-3 text-sm"
+
+                        >
+
+                            {loading ? "Submitting..." : "Submit Registration"} </button>
+
+                    </form>
+
+                </motion.div>
+
+                <div className="glass-card p-8">
+
+                    {event && (
+
+                        <>
+
+                            <h2 className="text-3xl font-bold neon-text mb-3">
+                                {event.eventName || event.title}
+                            </h2>
+
+                            <p className="text-sm text-white/70 mb-2">
+                                📍 Venue: {event.venue}
+                            </p>
+
+                            <p className="text-sm text-white/70 mb-2">
+                                💰 Fee: ₹{event.registrationFee}
+                            </p>
+
+                            <p className="text-sm text-white/70 mb-4">
+                                👥 Team Size: {event.minTeamSize} - {event.maxTeamSize}
+                            </p>
+
+                            <p className="text-sm text-white/70 leading-relaxed mb-6">
+                                {event.description}
+                            </p>
+
+                            <h3 className="text-white/60 text-sm mb-2">
+                                COORDINATOR
+                            </h3>
+
+                            {event.coordinatorName && (
+
+                                <div
+                                    onClick={() =>
+                                        setSelectedCoordinator({
+                                            name: event.coordinatorName,
+                                            phone: event.coordinatorPhone
+                                        })
+                                    }
+                                    className="bg-white/10 hover:bg-white/20 cursor-pointer p-2 rounded mb-2 text-sm"
+                                >
+                                    {event.coordinatorName}
+                                </div>
+
+                            )}
+
+                        </>
+
+                    )}
 
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+            </div>
 
-                    <h3 className="text-white/70">Team Members</h3>
+            {selectedCoordinator && (
 
-                    {teamFestIds.map((id, index) => (
-                        <div key={index} className="flex flex-col gap-2">
+                <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
 
-                            <div className="flex gap-2">
+                    <div className="glass-card p-6 w-80 text-center relative">
 
-                                <input
-                                    placeholder={`Member ${index + 2} Fest ID`}
-                                    value={id}
-                                    onChange={(e) => handleFestIdChange(index, e.target.value)}
-                                    className="input-neon w-full"
-                                />
+                        <button
+                            onClick={() => setSelectedCoordinator(null)}
+                            className="absolute top-2 right-3 text-white/60"
 
-                                <button
-                                    type="button"
-                                    onClick={() => fetchTeamMember(index, id)}
-                                    className="btn-neon px-4"
-                                >
-                                    Verify
-                                </button>
+                        >
 
-                            </div>
+                            ✕ </button>
 
-                            {teamDetails[index] && (
-                                <p className="text-xs text-green-400">
-                                    ✔ {teamDetails[index].name} — {teamDetails[index].college}
-                                </p>
-                            )}
+                        <h2 className="text-xl font-bold mb-4">
+                            {selectedCoordinator.name}
+                        </h2>
 
-                        </div>
-                    ))}
+                        <p className="text-blue-400 font-semibold">
+                            {selectedCoordinator.phone}
+                        </p>
 
-                    <input
-                        placeholder="UTR Number"
-                        value={utr}
-                        onChange={(e) => setUtr(e.target.value)}
-                        className="input-neon w-full"
-                        required
-                    />
+                    </div>
 
-                    <input
-                        type="file"
-                        onChange={(e) => setScreenshot(e.target.files[0])}
-                        className="text-white"
-                        required
-                    />
+                </div>
 
-                    <button
-                        disabled={loading}
-                        className="btn-neon-filled w-full py-3"
-                    >
-                        {loading ? "Submitting..." : "Submit Registration"}
-                    </button>
-
-                </form>
-
-            </motion.div>
+            )}
 
         </div>
+
     );
 }
-

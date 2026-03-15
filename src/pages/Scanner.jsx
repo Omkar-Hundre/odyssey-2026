@@ -1,57 +1,148 @@
-import { useEffect } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { useState, useRef } from "react";
+import { Html5Qrcode } from "html5-qrcode";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 
 export default function Scanner() {
 
-  async function fetchUser(festID) {
-    const q = query(
-      collection(db, "users"),
-      where("festID", "==", festID)
-    );
+  const scannerRef = useRef(null);
 
-    const snap = await getDocs(q);
+  const [scanning, setScanning] = useState(false);
+  const [participant, setParticipant] = useState(null);
+  const [status, setStatus] = useState("");
 
-    if (!snap.empty) {
-      const user = snap.docs[0].data();
-      console.log(user);
+  async function startScanner() {
 
-      alert(
-        `Name: ${user.name}
-College: ${user.college}
-Fest ID: ${user.festID}
-Events: ${user.registeredEvents?.length || 0}`
-      );
-    } else {
-      alert("Participant not found");
-    }
+    setScanning(true);
+
+    setTimeout(async () => {
+
+      const scanner = new Html5Qrcode("reader");
+      scannerRef.current = scanner;
+
+      try {
+
+        const cameras = await Html5Qrcode.getCameras();
+
+        if (!cameras || cameras.length === 0) {
+          alert("Camera not found");
+          return;
+        }
+
+        const cameraId = cameras[cameras.length - 1].id;
+
+        await scanner.start(
+          cameraId,
+          { fps: 10, qrbox: 260 },
+          async (decodedText) => {
+
+            console.log("QR VALUE:", decodedText);
+
+            await scanner.stop();
+            setScanning(false);
+
+            fetchRegistration(decodedText);
+          }
+        );
+
+      } catch (err) {
+        console.error("Scanner error:", err);
+        alert("Camera permission denied or scanner failed");
+      }
+
+    }, 200); // wait for DOM
   }
 
-  useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: 250 },
-      false
-    );
+  async function fetchRegistration(regId) {
 
-    scanner.render(
-      (decodedText) => {
-        console.log("Scanned:", decodedText);
-        fetchUser(decodedText);
-      },
-      (error) => {
-        console.warn(error);
-      }
-    );
+    const docRef = doc(db, "registrations", regId);
+    const snap = await getDoc(docRef);
 
-    return () => scanner.clear();
-  }, []);
+    if (!snap.exists()) {
+      setStatus("invalid");
+      return;
+    }
+
+    const data = snap.data();
+
+    if (data.checkedIn) {
+      setParticipant(data);
+      setStatus("already");
+      return;
+    }
+
+    await updateDoc(docRef, {
+      checkedIn: true,
+      checkedInTime: new Date()
+    });
+
+    setParticipant(data);
+    setStatus("success");
+  }
+
+  function scanNext() {
+    setParticipant(null);
+    setStatus("");
+  }
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h2>QR Scanner</h2>
-      <div id="reader" style={{ width: "300px" }}></div>
+    <div className="container mx-auto px-4 py-6">
+
+      <h1 className="text-2xl font-bold mb-6 text-center">
+        Event QR Scanner
+      </h1>
+
+      {!scanning && !participant && (
+        <button
+          onClick={startScanner}
+          className="w-full max-w-sm mx-auto block bg-blue-600 text-white py-3 rounded-lg"
+        >
+          Start Scanning
+        </button>
+      )}
+
+      {scanning && (
+        <div
+          id="reader"
+          className="w-full max-w-md mx-auto mt-6"
+        />
+      )}
+
+      {participant && (
+        <div className="max-w-md mx-auto mt-6 bg-white shadow rounded-lg p-5">
+
+          {status === "success" && (
+            <h2 className="text-green-600 font-bold mb-3">
+              Check-In Successful
+            </h2>
+          )}
+
+          {status === "already" && (
+            <h2 className="text-red-600 font-bold mb-3">
+              Already Checked In
+            </h2>
+          )}
+
+          {status === "invalid" && (
+            <h2 className="text-yellow-600 font-bold mb-3">
+              Invalid QR
+            </h2>
+          )}
+
+          <p><b>Name:</b> {participant.leaderName}</p>
+          <p><b>Fest ID:</b> {participant.leaderFestId}</p>
+          <p><b>Event:</b> {participant.eventName}</p>
+
+          <button
+            onClick={scanNext}
+            className="mt-5 w-full bg-black text-white py-2 rounded-lg"
+          >
+            Scan Next
+          </button>
+
+        </div>
+      )}
+
     </div>
   );
 }
