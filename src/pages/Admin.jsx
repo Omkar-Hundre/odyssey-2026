@@ -340,7 +340,7 @@ export default function Admin() {
   if (loading) {
 
     return (
-      <div className="min-h-screen pt-28 flex items-center justify-center">
+      <div className="min-h-screen pt-28 flex items-center justify-center bg-[#020617] text-white">
         <p className="text-white/40">Loading admin console...</p>
       </div>
     );
@@ -352,7 +352,7 @@ export default function Admin() {
   if (!isAdmin) {
 
     return (
-      <div className="min-h-screen pt-28 flex items-center justify-center">
+      <div className="min-h-screen pt-28 flex items-center justify-center bg-[#020617] text-white">
         <p className="text-red-400">Access Denied</p>
       </div>
     );
@@ -363,13 +363,22 @@ export default function Admin() {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center px-6 pt-20 pb-12 grid-bg">
+    <div className="min-h-screen flex items-center justify-center px-6 pt-20 pb-12 bg-[#020617] text-white">
 
       <div className="w-full max-w-7xl">
 
-        <h1 className="font-display text-3xl neon-text mb-8 text-center">
-          Admin Console
-        </h1>
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur">
+            <div className="h-px w-6 bg-cyan-400/60" />
+            <span className="font-mono text-[10px] tracking-[0.3em] text-cyan-300 uppercase">
+              Odyssey Admin
+            </span>
+            <div className="h-px w-6 bg-cyan-400/60" />
+          </div>
+          <h1 className="font-display text-3xl md:text-4xl tracking-[0.3em] uppercase neon-text">
+            Admin Console
+          </h1>
+        </div>
 
 
 
@@ -382,10 +391,11 @@ export default function Admin() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 text-xs font-mono tracking-widest border ${activeTab === tab
-                ? "border-neon-blue text-neon-blue"
-                : "border-white/20 text-white/40"
-                }`}
+              className={`px-5 py-2 rounded-full text-[10px] font-mono tracking-[0.3em] uppercase border transition-colors ${
+                activeTab === tab
+                  ? "border-cyan-400 bg-cyan-400/10 text-cyan-300 shadow-[0_0_25px_rgba(34,211,238,0.6)]"
+                  : "border-white/15 text-white/40 hover:border-cyan-400/70 hover:text-white"
+              }`}
             >
               {tab.toUpperCase()}
             </button>
@@ -406,10 +416,10 @@ export default function Admin() {
 
               <div
                 key={ev.id}
-                className="glass-card p-6"
+                className="glass-card p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md"
               >
 
-                <p className="text-xs font-mono text-white/40 mb-2">
+                <p className="text-[10px] font-mono text-cyan-300/80 tracking-[0.25em] uppercase mb-2">
                   {ev.category}
                 </p>
 
@@ -417,7 +427,7 @@ export default function Admin() {
                   {ev.title}
                 </h3>
 
-                <p className="text-white/40 text-sm mb-3">
+                <p className="text-white/60 text-sm mb-3">
                   {ev.description?.substring(0, 90)}...
                 </p>
 
@@ -437,7 +447,7 @@ export default function Admin() {
 
                   <button
                     onClick={() => handleDeleteEvent(ev.id)}
-                    className="border border-red-500 text-red-400 w-full py-2"
+                    className="border border-red-500/70 text-red-400 w-full py-2 rounded-full hover:bg-red-500/10"
                   >
                     Delete
                   </button>
@@ -462,7 +472,7 @@ export default function Admin() {
 
             <form
               onSubmit={handleCreateEvent}
-              className="glass-card p-10 w-full max-w-xl space-y-4"
+              className="glass-card p-10 w-full max-w-xl space-y-4 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md"
             >
 
               <h2 className="font-display text-xl text-center mb-6">
