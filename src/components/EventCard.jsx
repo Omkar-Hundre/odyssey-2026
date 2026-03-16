@@ -26,18 +26,17 @@ export default function EventCard({ event, registeredEvents = [] }) {
       return;
     }
 
-    if (alreadyRegistered) return;
-
     navigate(`/register-event/${event.id}`);
   }
 
   return (
     <motion.div
+      onClick={handleRegister}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col h-full relative overflow-hidden"
+      className="flex flex-col h-full relative overflow-hidden cursor-pointer"
       style={{
         background: "rgba(8, 15, 24, 0.7)",
         backdropFilter: "blur(16px)",
@@ -103,8 +102,10 @@ export default function EventCard({ event, registeredEvents = [] }) {
         {/* Register Button */}
         {alreadyRegistered ? (
 
-          <div className="mt-2 w-full py-3 text-center border border-green-500 text-green-400 text-xs">
-            REGISTERED
+          <div
+            className="mt-2 w-full py-3 text-center border border-green-500 text-green-400 text-xs hover:bg-green-500/10 transition-colors"
+          >
+            VIEW DETAILS (REGISTERED)
 
             {registration?.teamName && (
               <div className="text-white/60 text-xs mt-1">
@@ -117,8 +118,6 @@ export default function EventCard({ event, registeredEvents = [] }) {
         ) : (
 
           <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={handleRegister}
             className="btn-neon-filled mt-2 w-full py-2.5 text-xs font-semibold uppercase tracking-widest"
           >
             Register Now

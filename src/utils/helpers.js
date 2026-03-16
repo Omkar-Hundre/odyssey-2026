@@ -56,11 +56,15 @@ export function isValidEmail(email) {
  * Get color for event category tag
  */
 export const categoryColors = {
-  "AI/ML": { bg: "rgba(0,212,255,0.1)", border: "rgba(0,212,255,0.4)", text: "#00d4ff" },
-  "Hackathon": { bg: "rgba(155,89,255,0.1)", border: "rgba(155,89,255,0.4)", text: "#9b59ff" },
-  "Workshop": { bg: "rgba(0,255,240,0.1)", border: "rgba(0,255,240,0.4)", text: "#00fff0" },
-  "Robotics": { bg: "rgba(255,0,110,0.1)", border: "rgba(255,0,110,0.4)", text: "#ff006e" },
-  "Gaming": { bg: "rgba(255,165,0,0.1)", border: "rgba(255,165,0,0.4)", text: "#ffa500" },
+  "Central Events": { bg: "rgba(155,89,255,0.1)", border: "rgba(155,89,255,0.4)", text: "#9b59ff" },
+  "CSE Dept.": { bg: "rgba(0,212,255,0.1)", border: "rgba(0,212,255,0.4)", text: "#00d4ff" },
+  "AI/ML Dept.": { bg: "rgba(0,255,240,0.1)", border: "rgba(0,255,240,0.4)", text: "#00fff0" },
+  "Civil Dept.": { bg: "rgba(255,0,110,0.1)", border: "rgba(255,0,110,0.4)", text: "#ff006e" },
+  "ECE Dept.": { bg: "rgba(255,165,0,0.1)", border: "rgba(255,165,0,0.4)", text: "#ffa500" },
+  "EEE Dept.": { bg: "rgba(50,205,50,0.1)", border: "rgba(50,205,50,0.4)", text: "#32cd32" },
+  "Mechanical Dept.": { bg: "rgba(255,69,0,0.1)", border: "rgba(255,69,0,0.4)", text: "#ff4500" },
+  "MBA": { bg: "rgba(255,20,147,0.1)", border: "rgba(255,20,147,0.4)", text: "#ff1493" },
+  "MCA": { bg: "rgba(138,43,226,0.1)", border: "rgba(138,43,226,0.4)", text: "#8a2be2" },
   "default": { bg: "rgba(0,212,255,0.1)", border: "rgba(0,212,255,0.4)", text: "#00d4ff" },
 };
 
@@ -75,7 +79,7 @@ export const DEMO_EVENTS = [
   {
     id: "evt001",
     title: "Neural Networks Hackathon",
-    category: "Hackathon",
+    category: "Central Events",
     description: "36-hour hackathon challenging you to build real-world AI solutions. Compete solo or in teams of up to 4. Prizes worth ₹2,00,000.",
     date: "2025-03-15",
     time: "10:00 AM",
@@ -89,7 +93,7 @@ export const DEMO_EVENTS = [
   {
     id: "evt002",
     title: "Generative AI Workshop",
-    category: "Workshop",
+    category: "CSE Dept.",
     description: "Hands-on workshop with industry experts from Google DeepMind. Explore LLMs, Diffusion models, and multimodal AI systems.",
     date: "2025-03-16",
     time: "2:00 PM",
@@ -103,7 +107,7 @@ export const DEMO_EVENTS = [
   {
     id: "evt003",
     title: "Autonomous Robotics Showdown",
-    category: "Robotics",
+    category: "ECE Dept.",
     description: "Build an autonomous bot capable of navigating maze environments. Open to all engineering students. Technical specs provided 1 week prior.",
     date: "2025-03-17",
     time: "9:00 AM",
@@ -117,7 +121,7 @@ export const DEMO_EVENTS = [
   {
     id: "evt004",
     title: "ML Model Olympiad",
-    category: "AI/ML",
+    category: "AI/ML Dept.",
     description: "Compete head-to-head to train the most accurate model on a secret dataset. Results judged on accuracy, efficiency, and interpretability.",
     date: "2025-03-15",
     time: "12:00 PM",
@@ -131,7 +135,7 @@ export const DEMO_EVENTS = [
   {
     id: "evt005",
     title: "AI Gaming Championship",
-    category: "Gaming",
+    category: "MCA",
     description: "Program AI bots to compete in strategy games. Bots are evaluated in tournament brackets. Python SDK provided.",
     date: "2025-03-16",
     time: "11:00 AM",
@@ -145,7 +149,7 @@ export const DEMO_EVENTS = [
   {
     id: "evt006",
     title: "Prompt Engineering Masterclass",
-    category: "Workshop",
+    category: "MBA",
     description: "Learn advanced prompt engineering techniques from AI practitioners. Explore chain-of-thought, RAG pipelines, and agent orchestration.",
     date: "2025-03-17",
     time: "3:00 PM",

@@ -7,7 +7,7 @@ import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 
 
-const CATEGORIES = ["All", "Hackathon", "AI/ML", "Workshop", "Robotics", "Gaming"];
+const CATEGORIES = ["All", "Central Events", "CSE Dept.", "AI/ML Dept.", "Civil Dept.", "ECE Dept.", "EEE Dept.", "Mechanical Dept.", "MBA", "MCA"];
 
 export default function Events() {
 

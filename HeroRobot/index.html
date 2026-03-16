@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ODYSSEY 2K26</title>
+  <meta name="description" content="ODYSSEY 2026 is the premier national intercollegiate fest. Two days of competitions, celebrity nights, and transformative experiences. March 20–22, 2026.">
+  <meta name="theme-color" content="#020203">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Critical inline styles: prevent layout shifts before CSS parses -->
+  <style>
+    /* Spline wrapper: full-size, sits behind content */
+    .hero-spline {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-spline spline-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: auto;
+    }
+
+    /* Ensure hero content always clears the 3-D layer */
+    .hero__content {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Prevent burger flash on desktop before JS loads */
+    @media (min-width: 769px) {
+      .nav__burger { display: none !important; }
+    }
+
+    /* Prevent nav links flash + hero layout fix on mobile before JS loads */
+    @media (max-width: 768px) {
+      .nav__links { display: none !important; }
+
+      .hero__content {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .hero__title {
+        white-space: nowrap;
+        font-size: 11vw;
+        letter-spacing: -0.02em;
+        word-break: break-word;
+        line-height: 1.05;
+      }
+    }
+
+    /* Seamless section flow: hero → events transition */
+    .page-wrapper {
+      padding-top: 0;
+      margin-top: 0;
+      background: var(--c-void, #020203);
+    }
+
+    .books-section {
+      padding-top: clamp(2rem, 4vw, 4rem);
+    }
+
+    /* Bottom fade — sits above Spline but never captures pointer events */
+    .hero__fade-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 520px;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        rgba(2,2,3,0)   0%,
+        rgba(2,2,3,0.1) 30%,
+        rgba(2,2,3,0.35) 55%,
+        rgba(2,2,3,0.7) 75%,
+        rgba(2,2,3,0.9) 85%,
+        #020203 90%,
+        #020203 100%
+      );
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ====================================================
+       NAVIGATION
+       ===================================================== -->
+  <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+
+    <a href="#hero" class="nav__logo" aria-label="Odyssey 2026 — go to top">
+      <img src="./LOGO.png" alt="Odyssey 2026" width="38" height="38" fetchpriority="high">
+    </a>
+
+    <div class="nav__links" role="menubar">
+      <a href="#hero"     class="nav__link" role="menuitem">Home</a>
+      <a href="#events"   class="nav__link" role="menuitem">Events</a>
+      <a href="#schedule" class="nav__link" role="menuitem">Schedule</a>
+      <a href="#about"    class="nav__link" role="menuitem">About</a>
+      <a href="#venue"    class="nav__link" role="menuitem">Venue</a>
+      <a href="#contact"  class="nav__link" role="menuitem">Contact</a>
+      <a href="#register" class="nav__cta-btn" role="menuitem">✦ Register</a>
+    </div>
+
+    <button
+      class="nav__burger"
+      id="navBurger"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="navOverlay"
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile fullscreen overlay -->
+  <div class="nav__overlay" id="navOverlay" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <a href="#hero"     class="overlay-link">Home</a>
+    <a href="#events"   class="overlay-link">Events</a>
+    <a href="#schedule" class="overlay-link">Schedule</a>
+    <a href="#about"    class="overlay-link">About</a>
+    <a href="#venue"    class="overlay-link">Venue</a>
+    <a href="#contact"  class="overlay-link">Contact</a>
+    <a href="#register" class="overlay-link">✦ Register</a>
+  </div>
+
+  <!-- ====================================================
+       HERO
+       ===================================================== -->
+  <section class="hero" id="hero" aria-label="Hero — Odyssey 2026">
+
+    <div class="hero__glow hero__glow--1" aria-hidden="true"></div>
+    <div class="hero__glow hero__glow--2" aria-hidden="true"></div>
+
+    <canvas class="hero__canvas" id="heroCanvas" aria-hidden="true"></canvas>
+
+    <div class="hero__shape hero__shape--ring"          aria-hidden="true"></div>
+    <div class="hero__shape hero__shape--line"          aria-hidden="true"></div>
+    <div class="hero__shape hero__shape--dot hero__shape--d1" aria-hidden="true"></div>
+    <div class="hero__shape hero__shape--dot hero__shape--d2" aria-hidden="true"></div>
+
+    <div class="hero-spline" id="splineWrapper" aria-hidden="true">
+      <!-- spline-viewer injected by JS after load -->
+    </div>
+
+    <div class="hero__content">
+      <p class="hero__overline">// National Intercollegiate Fest 2026</p>
+      <h1 class="hero__title">ODYSSEY</h1>
+      <p class="hero__tagline">Where Legends Converge</p>
+      <p class="hero__date">March 20 — 22, 2026</p>
+      <p class="hero__college">Jain College of Engineering, Belagavi</p>
+
+      <div class="hero__actions">
+        <button class="button" data-action="register" aria-label="Book your spot at Odyssey 2026">
+          <div class="button-outer-hero">
+            <div class="button-inner-hero"><span>✦ Book Now</span></div>
+          </div>
+        </button>
+        <button class="button" data-action="events" aria-label="Explore venues and events">
+          <div class="button-outer-hero">
+            <div class="button-inner-hero"><span>→ Explore Venues</span></div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="hero__fade-bottom" aria-hidden="true"></div>
+
+  </section>
+
+  <!-- ====================================================
+       events CONTENT
+       ==================================================== -->
+  <div class="page-wrapper">
+    <section class="books-section" id="events">
+      <div class="section-header">
+        <!-- ⚑ CHANGE: label from "Fest Agenda" plain text → hero-style mono label -->
+        <div class="section-label">// Fest Agenda 2026</div>
+        <h2 class="section-title">Explore Our Events</h2>
+        
+        <!-- ⚑ ADDED: hero-style accent rule below sub -->
+        <div class="section-accent-line"></div>
+      </div>
+
+      <div class="books-container">
+
+        <!-- Central Events -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">🎭</div>
+              <div class="front__accent"></div>
+              <p class="front__title">Central Events</p>
+            </div>
+            <div class="card-face back">
+              <h2>Central Events</h2>
+              <ul>
+                <li>💃 Dancing — Solo</li>
+                <li>🎤 Singing — Solo</li>
+                <li>👗 Fashion Show</li>
+                <li>🎉 &amp; Many More</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/Central/Central.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Civil -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">🏛️</div>
+              <div class="front__accent"></div>
+              <p class="front__title">Civil Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>Civil Department</h2>
+              <ul>
+                <li>🏛️ Smriti Sangram</li>
+                <li>📐 Cad Break-Out</li>
+                <li>🥊 Royal Rumble</li>
+                <li>🎯 Deadshot</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/Civil/Civil.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- CS -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">💻</div>
+              <div class="front__accent"></div>
+              <p class="front__title">CS Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>CS Department</h2>
+              <ul>
+                <li>🧑‍💻 Digital Decipher</li>
+                <li>🕵️ Hack-A-Hunt</li>
+                <li>🧬 Crime Patrol</li>
+                <li>🦑 Squid Game 2.0</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/CSE/cse.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ECE -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">📡</div>
+              <div class="front__accent"></div>
+              <p class="front__title">ECE Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>ECE Department</h2>
+              <ul>
+                <li>🎮 BGMI</li>
+                <li>⚽ 5-a-Side Football</li>
+                <li>🔎 Treasure Hunt Saga</li>
+                <li>🤖 Robo Roadies</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/ECE/ECE.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- EEE -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">⚡</div>
+              <div class="front__accent"></div>
+              <p class="front__title">EEE Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>EEE Department</h2>
+              <ul>
+                <li>🔌 Technical Quiz</li>
+                <li>🎮 Minecraft Speed Run</li>
+                <li>🧱 Brick Walking</li>
+                <li>🎲 Snake and Ladder</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/EEE/EEE.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mechanical -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">⚙️</div>
+              <div class="front__accent"></div>
+              <p class="front__title">Mechanical Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>Mechanical Dept.</h2>
+              <ul>
+                <li>🔧 Poster on SDG's</li>
+                <li>🚗 CAD CLASH</li>
+                <li>🖨️ Tug Of War</li>
+                <li>⚡ Mini Militia</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/Mech/Mech.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- MBA -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">📊</div>
+              <div class="front__accent"></div>
+              <p class="front__title">MBA Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>MBA Department</h2>
+              <ul>
+                <li>⚖️ Balance The Ball</li>
+                <li>🔎 Ultimate Logo Quiz</li>
+                <li>🙈 BlindFold Challenge</li>
+                <li>🚀 TechBiz Startup</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/MBA/MBA.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- MCA -->
+        <div class="book-wrapper">
+          <div class="book">
+            <div class="card-face front">
+              <div class="front__icon">🖥️</div>
+              <div class="front__accent"></div>
+              <p class="front__title">MCA Department</p>
+            </div>
+            <div class="card-face back">
+              <h2>MCA Department</h2>
+              <ul>
+                <li>⚖️ Web Designing</li>
+                <li>🔎 IT Treasure Hunt</li>
+                <li>🙈 LAN Gaming</li>
+                <li>🚀 Minute To Win</li>
+              </ul>
+              <a href="https://odyssey-2k25.vercel.app/MCA/MCA.html" target="_blank" class="button">
+                <div class="button-outer"><div class="button-inner"><span>Explore</span></div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ============================================================
+    // NAVIGATION SCROLL STATE
+    // ============================================================
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ============================================================
+    // BURGER MENU
+    // ============================================================
+    const burger = document.getElementById('navBurger');
+    const overlay = document.getElementById('navOverlay');
+    if (burger && overlay) {
+      burger.addEventListener('click', () => {
+        const isOpen = overlay.classList.toggle('open');
+        burger.classList.toggle('active', isOpen);
+        burger.setAttribute('aria-expanded', isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+      });
+      overlay.querySelectorAll('.overlay-link').forEach(link => {
+        link.addEventListener('click', () => {
+          overlay.classList.remove('open');
+          burger.classList.remove('active');
+          burger.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        });
+      });
+    }
+
+    // ============================================================
+    // SCROLL-IN ANIMATION — unchanged from original
+    // ============================================================
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+    document.querySelectorAll('.book-wrapper').forEach(el => obs.observe(el));
+
+    // ============================================================
+    // BUTTON CLICK ANIMATION — unchanged from original
+    // ============================================================
+    document.querySelectorAll('.button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.add('clicked');
+        setTimeout(() => btn.classList.remove('clicked'), 300);
+      });
+    });
+  </script>
+
+  <script defer src="./script.js"></script>
+
+</body>
+</html>

@@ -8,7 +8,9 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  query,
+  where
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 import { useAuth } from "../context/AuthContext";
@@ -31,17 +33,17 @@ export default function Admin() {
   const [successMsg, setSuccessMsg] = useState("");
 
   const [editingEvent, setEditingEvent] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
-    category: "AI/ML",
+    category: "Central Events",
     description: "",
     date: "",
     time: "",
     venue: "",
     registrationFee: "",
-    coordinatorName: "",
-    coordinatorPhone: "",
+    coordinators: [{ name: "", phone: "" }],
     minTeamSize: 1,
     maxTeamSize: 1,
     maxRegistrations: 100,
@@ -153,14 +155,15 @@ export default function Admin() {
 
     setForm({
       title: event.title || "",
-      category: event.category || "AI/ML",
+      category: event.category || "Central Events",
       description: event.description || "",
       date: event.date || "",
       time: event.time || "",
       venue: event.venue || "",
       registrationFee: event.registrationFee || "",
-      coordinatorName: event.coordinatorName || "",
-      coordinatorPhone: event.coordinatorPhone || "",
+      coordinators: event.coordinators && event.coordinators.length > 0 
+        ? event.coordinators 
+        : [{ name: event.coordinatorName || "", phone: event.coordinatorPhone || "" }],
       minTeamSize: event.minTeamSize || 1,
       maxTeamSize: event.maxTeamSize || 1,
       maxRegistrations: event.maxRegistrations || 100,
@@ -191,6 +194,53 @@ export default function Admin() {
 
     }
 
+  }
+
+
+
+  async function handleDeleteRegistration(regId) {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this registration?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, "registrations", regId));
+      setRegistrations((prev) => prev.filter((r) => r.id !== regId));
+    } catch (err) {
+      alert("Failed to delete registration");
+    }
+  }
+
+
+
+  async function handleViewTeam(reg) {
+    try {
+      let fullMembers = [];
+      if (reg.teamFestIds && reg.teamFestIds.length > 0) {
+        // Fetch full user details for all fest IDs in this registration
+        // 'in' query supports up to 10 elements.
+        const chunks = [];
+        for (let i = 0; i < reg.teamFestIds.length; i += 10) {
+          chunks.push(reg.teamFestIds.slice(i, i + 10));
+        }
+
+        for (const chunk of chunks) {
+          const q = query(collection(db, "users"), where("festID", "in", chunk));
+          const snap = await getDocs(q);
+          const usersData = snap.docs.map(doc => doc.data());
+          fullMembers = [...fullMembers, ...usersData];
+        }
+      }
+      setSelectedTeam({
+        ...reg,
+        fullMembers
+      });
+    } catch (err) {
+      console.error(err);
+      setSelectedTeam(reg); // Fallback to basic info
+    }
   }
 
 
@@ -254,14 +304,13 @@ export default function Admin() {
 
       setForm({
         title: "",
-        category: "AI/ML",
+        category: "Central Events",
         description: "",
         date: "",
         time: "",
         venue: "",
         registrationFee: "",
-        coordinatorName: "",
-        coordinatorPhone: "",
+        coordinators: [{ name: "", phone: "" }],
         maxTeamSize: 1,
         maxRegistrations: 100
       });
@@ -429,6 +478,24 @@ export default function Admin() {
                 required
               />
 
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleFormChange}
+                className="input-neon w-full text-white/70"
+                required
+              >
+                <option value="Central Events">Central Events</option>
+                <option value="CSE Dept.">CSE Dept.</option>
+                <option value="AI/ML Dept.">AI/ML Dept.</option>
+                <option value="Civil Dept.">Civil Dept.</option>
+                <option value="ECE Dept.">ECE Dept.</option>
+                <option value="EEE Dept.">EEE Dept.</option>
+                <option value="Mechanical Dept.">Mechanical Dept.</option>
+                <option value="MBA">MBA</option>
+                <option value="MCA">MCA</option>
+              </select>
+
               <input
                 name="venue"
                 value={form.venue}
@@ -463,21 +530,44 @@ export default function Admin() {
                 className="input-neon w-full"
               />
 
-              <input
-                name="coordinatorName"
-                value={form.coordinatorName}
-                onChange={handleFormChange}
-                placeholder="Coordinator Name"
-                className="input-neon w-full"
-              />
-
-              <input
-                name="coordinatorPhone"
-                value={form.coordinatorPhone}
-                onChange={handleFormChange}
-                placeholder="Coordinator Phone"
-                className="input-neon w-full"
-              />
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-white/50 text-sm">
+                  <label>Coordinators</label>
+                  <button type="button" onClick={() => setForm(prev => ({...prev, coordinators: [...prev.coordinators, {name: "", phone: ""}]}))} className="text-neon-blue text-xs hover:underline">+ Add Coordinator</button>
+                </div>
+                {form.coordinators.map((c, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <input
+                      value={c.name}
+                      onChange={(e) => {
+                        const newCoords = [...form.coordinators];
+                        newCoords[i].name = e.target.value;
+                        setForm({...form, coordinators: newCoords});
+                      }}
+                      placeholder="Name"
+                      className="input-neon flex-1"
+                      required
+                    />
+                    <input
+                      value={c.phone}
+                      onChange={(e) => {
+                        const newCoords = [...form.coordinators];
+                        newCoords[i].phone = e.target.value;
+                        setForm({...form, coordinators: newCoords});
+                      }}
+                      placeholder="Phone"
+                      className="input-neon flex-1"
+                      required
+                    />
+                    {form.coordinators.length > 1 && (
+                      <button type="button" onClick={() => {
+                        const newCoords = form.coordinators.filter((_, idx) => idx !== i);
+                        setForm({...form, coordinators: newCoords});
+                      }} className="text-red-400 text-lg px-2 hover:bg-red-400/10 rounded">×</button>
+                    )}
+                  </div>
+                ))}
+              </div>
 
               <textarea
                 name="description"
@@ -538,7 +628,7 @@ export default function Admin() {
                   <th className="p-3 text-left">Event Name</th>
                   <th className="p-3 text-left">Team Name</th>
                   <th className="p-3 text-left">Leader</th>
-                  <th className="p-3 text-left">Leader ID</th>
+                  <th className="p-3 text-left">Leader Info</th>
                   <th className="p-3 text-left">Team Members</th>
                   <th className="p-3 text-left">UTR</th>
                   <th className="p-3 text-left">Payment</th>
@@ -559,24 +649,33 @@ export default function Admin() {
                     </td>
 
                     <td className="p-3 text-purple-400">
-                      {r.teamName || "-"}
+                      <button 
+                        onClick={() => handleViewTeam(r)}
+                        className="hover:underline text-left"
+                      >
+                        {r.teamName || "Individual"}
+                      </button>
                     </td>
 
                     <td className="p-3 text-white/60">
                       {r.leaderName}
                     </td>
 
-                    <td className="p-3 text-cyan-400">
-                      {r.leaderFestId}
+                    <td className="p-3 text-cyan-400 text-xs">
+                      <div><span className="font-mono">{r.leaderFestId}</span></div>
+                      <div className="text-white/40 mt-1">{r.leaderMobile || "—"}</div>
                     </td>
 
                     <td className="p-3 text-xs text-white/60">
                       {r.teamMembers && r.teamMembers.length > 0 ? (
-                        r.teamMembers.map((m, i) => (
-                          <div key={i}>
-                            {m.name} ({m.festID})
-                          </div>
-                        ))
+                        <div className="space-y-2">
+                          {r.teamMembers.map((m, i) => (
+                            <div key={i} className="leading-tight">
+                              <span className="text-white/80">{m.name}</span> <span className="text-cyan-400/80 font-mono">({m.festID})</span>
+                              {m.mobile && <div className="text-white/40">{m.mobile}</div>}
+                            </div>
+                          ))}
+                        </div>
                       ) : (
                         <span className="text-white/30">No members</span>
                       )}
@@ -625,9 +724,16 @@ export default function Admin() {
 
                       <button
                         onClick={() => updatePaymentStatus(r.id, "rejected")}
-                        className="text-red-400 text-xs"
+                        className="text-yellow-400 text-xs"
                       >
                         Reject
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteRegistration(r.id)}
+                        className="text-red-400 text-xs"
+                      >
+                        Delete
                       </button>
 
                     </td>
@@ -644,6 +750,53 @@ export default function Admin() {
         )}
 
       </div>
+
+      {selectedTeam && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50 p-4">
+          <div className="glass-card p-6 w-full max-w-3xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setSelectedTeam(null)}
+              className="absolute top-4 right-4 text-white/60 hover:text-white"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-xl font-bold mb-2 neon-text">Team Details</h2>
+            <p className="text-sm text-white/60 mb-6">
+              <span className="text-white">Event:</span> {selectedTeam.eventName} <br />
+              <span className="text-white">Team Name:</span> {selectedTeam.teamName || "Individual"} <br />
+              <span className="text-white">UTR:</span> {selectedTeam.utr}
+            </p>
+
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-white/40 border-b border-white/10">
+                  <th className="p-2 text-left">Role</th>
+                  <th className="p-2 text-left">Name</th>
+                  <th className="p-2 text-left">Fest ID</th>
+                  <th className="p-2 text-left">Email</th>
+                  <th className="p-2 text-left">Mobile</th>
+                  <th className="p-2 text-left">College</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedTeam.fullMembers ? selectedTeam.fullMembers.map((member, i) => (
+                  <tr key={i} className="border-b border-white/5">
+                    <td className="p-2 text-white/50">{member.festID === selectedTeam.leaderFestId ? "Leader" : "Member"}</td>
+                    <td className="p-2 text-white/80">{member.name}</td>
+                    <td className="p-2 text-cyan-400 font-mono text-xs">{member.festID}</td>
+                    <td className="p-2 text-white/60">{member.email || "—"}</td>
+                    <td className="p-2 text-white/60">{member.mobile || "—"}</td>
+                    <td className="p-2 text-white/60 truncate max-w-[150px]">{member.college || "—"}</td>
+                  </tr>
+                )) : (
+                  <tr><td colSpan="6" className="p-4 text-center text-white/40">Loading or unavailable...</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
     </div>
 

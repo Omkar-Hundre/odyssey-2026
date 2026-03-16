@@ -126,6 +126,7 @@ export default function Dashboard() {
 
               <p><b>ODYSSEY ID:</b> {festID}</p>
               <p><b>Name:</b> {displayName}</p>
+              <p><b>Mobile:</b> {userProfile?.mobile || "—"}</p>
               <p><b>College:</b> {college}</p>
               <p><b>Email:</b> {email}</p>
 

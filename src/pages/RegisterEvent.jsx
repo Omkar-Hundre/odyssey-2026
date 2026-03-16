@@ -24,7 +24,6 @@ export default function RegisterEvent() {
     const leader = userProfile;
 
     const [event, setEvent] = useState(null);
-    const [selectedCoordinator, setSelectedCoordinator] = useState(null);
 
     const [teamName, setTeamName] = useState("");
     const [teamFestIds, setTeamFestIds] = useState([]);
@@ -34,8 +33,30 @@ export default function RegisterEvent() {
     const [screenshot, setScreenshot] = useState(null);
 
     const [loading, setLoading] = useState(false);
+    const [existingRegistration, setExistingRegistration] = useState(null);
 
     if (!leader) return null;
+
+    useEffect(() => {
+        async function checkRegistration() {
+            try {
+                const q = query(
+                    collection(db, "registrations"),
+                    where("eventId", "==", eventId),
+                    where("teamFestIds", "array-contains", leader.festID)
+                );
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    setExistingRegistration(snap.docs[0].data());
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        if (eventId && leader?.festID) {
+            checkRegistration();
+        }
+    }, [eventId, leader]);
 
     useEffect(() => {
 
@@ -199,6 +220,7 @@ export default function RegisterEvent() {
 
                 leaderName: leader.name,
                 leaderFestId: leader.festID,
+                leaderMobile: leader.mobile || "",
 
                 teamFestIds: allFestIds,   // ⭐ ADD THIS
                 
@@ -207,7 +229,8 @@ export default function RegisterEvent() {
                     .filter(Boolean)
                     .map(member => ({
                         name: member.name,
-                        festID: member.festID
+                        festID: member.festID,
+                        mobile: member.mobile || ""
                     })),
 
                 utr: utr,
@@ -265,6 +288,16 @@ export default function RegisterEvent() {
                         <p><b>College:</b> {leader.college}</p>
 
                     </div>
+
+                    {existingRegistration ? (
+                        <div className="text-center p-8 border border-green-500/30 bg-green-500/10 rounded">
+                            <h3 className="text-green-400 font-bold mb-2">You are already registered!</h3>
+                            {existingRegistration.teamName && <p className="text-white/70 text-sm mb-1">Team: {existingRegistration.teamName}</p>}
+                            <p className="text-white/70 text-sm mb-4">Status: <span className="text-white font-semibold">{existingRegistration.paymentStatus || "Pending"}</span></p>
+                            <p className="text-white/50 text-xs">Return to dashboard to manage your registrations.</p>
+                            <button type="button" onClick={() => navigate("/dashboard")} className="btn-neon mt-4 w-full py-2 text-xs">Go to Dashboard</button>
+                        </div>
+                    ) : (
 
                     <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -340,6 +373,7 @@ export default function RegisterEvent() {
                             {loading ? "Submitting..." : "Submit Registration"} </button>
 
                     </form>
+                    )}
 
                 </motion.div>
 
@@ -369,22 +403,27 @@ export default function RegisterEvent() {
                                 {event.description}
                             </p>
 
-                            <h3 className="text-white/60 text-sm mb-2">
-                                COORDINATOR
+                            <h3 className="text-white/60 text-sm mb-2 mt-4">
+                                COORDINATORS
                             </h3>
 
-                            {event.coordinatorName && (
+                            {event.coordinators?.length > 0 ? (
+                                event.coordinators.map((coord, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="bg-white/10 p-2 rounded mb-2 text-sm"
+                                    >
+                                        <div className="font-semibold">{coord.name}</div>
+                                        <div className="text-blue-400 text-xs">{coord.phone}</div>
+                                    </div>
+                                ))
+                            ) : event.coordinatorName && (
 
                                 <div
-                                    onClick={() =>
-                                        setSelectedCoordinator({
-                                            name: event.coordinatorName,
-                                            phone: event.coordinatorPhone
-                                        })
-                                    }
-                                    className="bg-white/10 hover:bg-white/20 cursor-pointer p-2 rounded mb-2 text-sm"
+                                    className="bg-white/10 p-2 rounded mb-2 text-sm"
                                 >
-                                    {event.coordinatorName}
+                                    <div className="font-semibold">{event.coordinatorName}</div>
+                                    <div className="text-blue-400 text-xs">{event.coordinatorPhone}</div>
                                 </div>
 
                             )}
@@ -396,34 +435,6 @@ export default function RegisterEvent() {
                 </div>
 
             </div>
-
-            {selectedCoordinator && (
-
-                <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-
-                    <div className="glass-card p-6 w-80 text-center relative">
-
-                        <button
-                            onClick={() => setSelectedCoordinator(null)}
-                            className="absolute top-2 right-3 text-white/60"
-
-                        >
-
-                            ✕ </button>
-
-                        <h2 className="text-xl font-bold mb-4">
-                            {selectedCoordinator.name}
-                        </h2>
-
-                        <p className="text-blue-400 font-semibold">
-                            {selectedCoordinator.phone}
-                        </p>
-
-                    </div>
-
-                </div>
-
-            )}
 
         </div>
 

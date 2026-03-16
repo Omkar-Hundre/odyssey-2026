@@ -2,80 +2,83 @@
 import { motion } from "framer-motion";
 
 export default function Loader() {
+  const letters = "ODYSSEY".split("");
+  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-900">
-      <div className="relative flex flex-col items-center gap-8">
-        {/* Hexagon spinner */}
-        <div className="relative w-24 h-24">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute inset-0 border border-neon-blue rounded-sm"
-              style={{ borderRadius: "4px" }}
-              animate={{
-                rotate: [0, 360],
-                scale: [1, 1.2, 1],
-                opacity: [0.2, 1, 0.2],
-              }}
-              transition={{
-                duration: 2,
-                delay: i * 0.15,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#080f18]">
+      <div className="relative flex flex-col items-center">
+        
+        {/* Animated Geometric Decoration */}
+        <div className="relative w-32 h-32 mb-12 flex items-center justify-center">
+          {/* Outer rotating frame */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute inset-0 border-2 border-neon-blue/20"
+            animate={{ 
+              rotate: [0, 90, 180, 270, 360],
+              borderRadius: ["20%", "50%", "20%", "50%", "20%"],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          />
+          {/* Inner counter-rotating frame */}
+          <motion.div
+            className="absolute inset-4 border border-neon-purple/40"
+            animate={{ 
+              rotate: [360, 270, 180, 90, 0],
+              borderRadius: ["50%", "20%", "50%", "20%", "50%"],
+              scale: [0.9, 1, 0.9]
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          />
+          
+          {/* Center Text */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="relative font-display font-black text-2xl text-white tracking-widest"
           >
-            <svg viewBox="0 0 40 40" className="w-10 h-10">
-              <defs>
-                <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#00d4ff" />
-                  <stop offset="100%" stopColor="#9b59ff" />
-                </linearGradient>
-              </defs>
-              <polygon
-                points="20,2 38,11 38,29 20,38 2,29 2,11"
-                fill="url(#lg)"
-                opacity="0.8"
-              />
-              <text
-                x="20"
-                y="26"
-                fontFamily="Orbitron"
-                fontSize="14"
-                fontWeight="bold"
-                fill="white"
-                textAnchor="middle"
-              >
-                N
-              </text>
-            </svg>
+            2K26
           </motion.div>
         </div>
 
-        {/* Scanning line */}
-        <div className="relative w-48 h-px bg-dark-700 overflow-hidden">
+        {/* ODYSSEY Letter Stagger Animation */}
+        <div className="flex gap-2 mb-2">
+          {letters.map((letter, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20, filter: "blur(12px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.8,
+                delay: i * 0.1,
+                repeat: Infinity,
+                repeatType: "reverse",
+                repeatDelay: 1.5,
+                ease: "circOut"
+              }}
+              className="font-display text-4xl md:text-6xl font-black text-white tracking-tighter"
+            >
+              {letter}
+            </motion.span>
+          ))}
+        </div>
+
+        {/* Scanning status line */}
+        <div className="w-48 h-[2px] bg-white/5 mt-8 relative overflow-hidden">
           <motion.div
-            className="absolute top-0 left-0 h-full w-16"
-            style={{
-              background: "linear-gradient(90deg, transparent, #00d4ff, transparent)",
-            }}
-            animate={{ x: [-64, 192] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+            className="absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-transparent via-neon-cyan to-transparent shadow-[0_0_15px_rgba(0,212,255,0.8)]"
+            animate={{ x: [-100, 200] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
 
-        {/* Text */}
         <motion.p
-          className="font-mono text-xs tracking-[0.4em] text-neon-blue uppercase"
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="mt-6 font-mono text-[10px] tracking-[0.5em] text-white/30 uppercase"
         >
-          Initializing ODYSSEY
+          Syncing Core Systems
         </motion.p>
       </div>
     </div>
