@@ -1,6 +1,7 @@
 // src/components/Footer.jsx
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
 const socialLinks = [
   {
@@ -42,6 +43,7 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const { currentUser } = useAuth();
   return (
     <footer className="relative border-t border-neon-blue/10 bg-dark-800">
       {/* Top glow line */}
@@ -74,7 +76,7 @@ export default function Footer() {
               March 15–17, 2025.
             </p>
             <div className="mt-4">
-              <span className="tag text-xs">National Institute of Technology</span>
+              <span className="tag text-xs">Jain College Of Engineering, Belagavi</span>
             </div>
           </div>
 
@@ -89,10 +91,10 @@ export default function Footer() {
                 { label: "Events", path: "/events" },
                 { label: "Register", path: "/register" },
                 { label: "Login", path: "/login" },
-                { label: "Dashboard", path: "/dashboard" },
-                { label: "admin", path: "/admin" },
-                { label: "scanner", path: "/scanner" },
-              ].map((link) => (
+                { label: "Dashboard", path: "/dashboard", reqAuth: true },
+                { label: "admin", path: "/admin", reqAuth: true },
+                { label: "scanner", path: "/scanner", reqAuth: true },
+              ].filter((link) => !link.reqAuth || currentUser).map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}

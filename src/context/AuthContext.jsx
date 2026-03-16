@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
     return "ODY26" + uid.slice(-5).toUpperCase();
   }
 
-  async function register(email, password, name, college) {
+  async function register(email, password, name, college, mobile) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
 
     await updateProfile(cred.user, { displayName: name });
@@ -39,6 +39,7 @@ export function AuthProvider({ children }) {
       festID: festID,
       name: name,
       email: email,
+      mobile: mobile,
       college: college,
       role: "user",
       registeredEvents: [],

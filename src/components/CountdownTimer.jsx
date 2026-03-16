@@ -8,31 +8,19 @@ const FEST_DATE = "2025-03-15T10:00:00";
 function TimeBlock({ value, label }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="relative">
-        {/* Background card */}
-        <div
-          className="w-16 md:w-20 h-16 md:h-20 flex items-center justify-center"
-          style={{
-            background: "rgba(13, 24, 41, 0.8)",
-            border: "1px solid rgba(0, 212, 255, 0.2)",
-            clipPath: "polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px)",
-          }}
+      <div 
+        className="w-16 md:w-20 h-16 md:h-20 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm"
+      >
+        <motion.span
+          key={value}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="font-display text-2xl md:text-3xl font-bold text-white"
         >
-          <motion.span
-            key={value}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="font-display text-2xl md:text-3xl font-bold text-neon-blue text-glow-blue"
-          >
-            {String(value).padStart(2, "0")}
-          </motion.span>
-        </div>
-
-        {/* Corner accents */}
-        <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-blue/60" />
-        <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-blue/60" />
+          {String(value).padStart(2, "0")}
+        </motion.span>
       </div>
-      <span className="mt-2 font-mono text-xs tracking-[0.2em] uppercase text-white/30">
+      <span className="mt-3 font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">
         {label}
       </span>
     </div>
@@ -53,10 +41,10 @@ export default function CountdownTimer({ targetDate = FEST_DATE }) {
 
   if (time.total <= 0) {
     return (
-      <div className="text-center">
+      <div className="py-2 px-6 bg-neon-blue/10 border border-neon-blue/20 rounded-full">
         <motion.p
-          className="font-display text-2xl font-bold neon-text"
-          animate={{ opacity: [0.7, 1, 0.7] }}
+          className="font-display text-lg font-bold text-neon-blue tracking-widest"
+          animate={{ opacity: [0.8, 1, 0.8] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
           ODYSSEY IS LIVE NOW
@@ -66,46 +54,13 @@ export default function CountdownTimer({ targetDate = FEST_DATE }) {
   }
 
   return (
-    <div className="flex items-start gap-3 md:gap-5">
+    <div className="flex items-center gap-4 md:gap-8">
       <TimeBlock value={time.days} label="Days" />
-      <div className="flex flex-col gap-2 pt-4">
-        <motion.span
-          className="block w-1 h-1 rounded-full bg-neon-blue"
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <motion.span
-          className="block w-1 h-1 rounded-full bg-neon-blue"
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-        />
-      </div>
+      <div className="text-white/20 font-bold text-xl pt-1">:</div>
       <TimeBlock value={time.hours} label="Hours" />
-      <div className="flex flex-col gap-2 pt-4">
-        <motion.span
-          className="block w-1 h-1 rounded-full bg-neon-blue"
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <motion.span
-          className="block w-1 h-1 rounded-full bg-neon-blue"
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-        />
-      </div>
+      <div className="text-white/20 font-bold text-xl pt-1">:</div>
       <TimeBlock value={time.minutes} label="Minutes" />
-      <div className="flex flex-col gap-2 pt-4">
-        <motion.span
-          className="block w-1 h-1 rounded-full bg-neon-blue"
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <motion.span
-          className="block w-1 h-1 rounded-full bg-neon-blue"
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-        />
-      </div>
+      <div className="text-white/20 font-bold text-xl pt-1">:</div>
       <TimeBlock value={time.seconds} label="Seconds" />
     </div>
   );

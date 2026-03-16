@@ -4,6 +4,130 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CountdownTimer from "../components/CountdownTimer";
 
+// Robot Model Configuration
+const ROBOT_SCALE = 1.5; // Increase for zoom (1.0 is default)
+const ROBOT_Y_OFFSET = "130px"; // Adjust vertical position (e.g. -100px to move up)
+
+// 3D Robot Model from splinetool using web component
+function SplineRobot() {
+  const viewerRef = useRef(null);
+
+  useEffect(() => {
+    // Add the spline-viewer script dynamically
+    const scriptId = "spline-viewer-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.type = "module";
+      script.src = "https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js";
+      document.head.appendChild(script);
+    }
+
+    // Mouse event forwarding logic
+    let rafPending = false;
+    let pendingEvent = null;
+
+    const dispatchToSpline = () => {
+      rafPending = false;
+      if (!pendingEvent || !viewerRef.current) return;
+      const e = pendingEvent;
+      pendingEvent = null;
+
+      const viewer = viewerRef.current;
+      // Spline usually listens on the canvas inside the shadow DOM
+      const target = viewer.shadowRoot?.querySelector('canvas');
+      if (!target) return;
+
+      // Create and dispatch a new mousemove event exactly as expected by Spline
+      const mouseEvent = new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: e.clientX,
+        clientY: e.clientY,
+        screenX: e.screenX,
+        screenY: e.screenY,
+        movementX: e.movementX || 0,
+        movementY: e.movementY || 0,
+        view: window,
+      });
+
+      target.dispatchEvent(mouseEvent);
+    };
+
+    const handleMouseMove = (e) => {
+      pendingEvent = e;
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(dispatchToSpline);
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      const t = e.touches[0] || (e.changedTouches && e.changedTouches[0]);
+      if (!t) return;
+      pendingEvent = {
+        clientX: t.clientX,
+        clientY: t.clientY,
+        screenX: t.screenX,
+        screenY: t.screenY
+      };
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(dispatchToSpline);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    // Attempt to remove watermarks if possible
+    const removeWatermark = () => {
+      const v = viewerRef.current;
+      if (v && v.shadowRoot) {
+        const logo = v.shadowRoot.querySelector('#logo') || v.shadowRoot.querySelector('a[href*="spline"]');
+        if (logo) logo.style.display = 'none';
+      }
+    };
+
+    const interval = setInterval(removeWatermark, 1000);
+    setTimeout(() => clearInterval(interval), 10000);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
+  return (
+    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden flex justify-center lg:justify-end opacity-40 blur-sm lg:opacity-100 lg:blur-none pointer-events-none">
+      <div className="w-full lg:w-[60%] h-full relative">
+        <spline-viewer
+          ref={viewerRef}
+          url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+          loading-anim-type="spinner-small-dark"
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+            transform: `scale(${ROBOT_SCALE}) translateY(${ROBOT_Y_OFFSET})`,
+            transformOrigin: "center center",
+            pointerEvents: "auto"
+          }}
+        ></spline-viewer>
+
+        {/* Bottom fade to blend seamlessly into the content below */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[200px] z-10 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, transparent 0%, #080f18 100%)"
+          }}
+        ></div>
+      </div>
+    </div>
+  );
+}
+
 // Animated background grid with particles
 function ParticleField() {
   const canvasRef = useRef(null);
@@ -147,116 +271,95 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#080f18]">
         <ParticleField />
-        <HexGrid />
+        <SplineRobot />
 
-        {/* Radial glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,212,255,0.06) 0%, rgba(155,89,255,0.04) 40%, transparent 70%)",
-          }}
-        />
-
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="relative z-10 text-center px-6 max-w-5xl mx-auto"
-        >
-          {/* Top label */}
+        <div className="container mx-auto px-6 relative z-10 text-center lg:text-left w-full h-full flex flex-col justify-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-center gap-3 mb-8"
+            style={{ y: heroY, opacity: heroOpacity }}
+            className="w-full max-w-xl lg:max-w-2xl pt-20 lg:pt-0 mx-auto lg:mx-0"
           >
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-neon-blue" />
-            <span className="tag text-xs">Jain College Of Engineering ,Belagavi</span>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-neon-blue" />
-          </motion.div>
+            {/* Top label */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center justify-center lg:justify-start gap-3 mb-8"
+            >
+              <div className="h-px w-8 bg-neon-blue" />
+              <span className="tag text-xs tracking-widest text-neon-blue uppercase">Jain College Of Engineering, Belagavi</span>
+              <div className="h-px w-8 bg-neon-blue" />
+            </motion.div>
 
-          {/* Main title */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <h1 className="font-display font-black tracking-[0.15em] leading-none mb-4">
-              <span className="block text-6xl md:text-8xl lg:text-9xl text-white/10 select-none absolute left-1/2 -translate-x-1/2 blur-sm">
-                ODYSSEY
-              </span>
-              <span
-                className="relative block text-6xl md:text-8xl lg:text-9xl"
-                style={{
-                  background: "linear-gradient(135deg, #ffffff 0%, #00d4ff 40%, #9b59ff 70%, #ffffff 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                ODYSSEY
-              </span>
-            </h1>
-            <div className="flex items-center justify-center gap-4 mt-2">
-              <div className="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-neon-blue/50" />
-              <p className="font-mono text-neon-blue/80 text-sm tracking-[0.5em] uppercase">
-                NATIONAL LEVEL TECHNO CULTURAL FEST
-              </p>
-              <div className="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-neon-blue/50" />
-            </div>
-          </motion.div>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="font-body text-lg md:text-xl text-white/50 max-w-2xl mx-auto mt-8 leading-relaxed"
-          >
-            Where intelligence meets innovation. Three days of competitions, workshops,
-            and ideas that will define the next decade of technology.
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10"
-          >
-            <Link to="/events" className="btn-neon-filled text-sm w-48 text-center">
-              View Events
-            </Link>
-            <Link to="/register" className="btn-neon text-sm w-48 text-center">
-              Register Now
-            </Link>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="flex items-center justify-center gap-8 mt-14"
-          >
-            {[
-              { value: "20+", label: "Events" },
-              { value: "5000+", label: "Participants" },
-              { value: "₹5L", label: "Prize Pool" },
-              { value: "3", label: "Days" },
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="font-display font-bold text-2xl md:text-3xl neon-text">
-                  {stat.value}
-                </div>
-                <div className="font-mono text-xs text-white/30 tracking-widest uppercase mt-0.5">
-                  {stat.label}
-                </div>
+            {/* Main title */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+            >
+              <h1 className="font-display font-black tracking-widest leading-none mb-4 text-white">
+                <span className="block text-6xl md:text-7xl lg:text-8xl">
+                  ODYSSEY
+                </span>
+              </h1>
+              <div className="flex items-center justify-center lg:justify-start gap-4 mt-2">
+                <p className="font-mono text-white/70 text-sm tracking-[0.2em] uppercase">
+                  NATIONAL LEVEL TECHNO CULTURAL FEST
+                </p>
               </div>
-            ))}
+            </motion.div>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="font-body text-base md:text-lg text-white/70 max-w-lg mt-8 leading-relaxed mx-auto lg:mx-0"
+            >
+              Where intelligence meets innovation. Three days of competitions, workshops,
+              and ideas that will define the next decade of technology.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-10"
+            >
+              <Link to="/events" className="btn-neon-filled text-sm w-48 text-center bg-white text-black border-none hover:bg-gray-200 shadow-none">
+                View Events
+              </Link>
+              <Link to="/register" className="btn-neon text-sm w-48 text-center border border-white/20 hover:border-white/50 hover:bg-white/5 text-white">
+                Register Now
+              </Link>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.9 }}
+              className="flex items-center justify-center lg:justify-start gap-10 mt-14"
+            >
+              {[
+                { value: "20+", label: "Events" },
+                { value: "5000+", label: "Participants" },
+                { value: "3", label: "Days" },
+              ].map((stat, i) => (
+                <div key={i} className="text-center lg:text-left">
+                  <div className="font-display font-bold text-2xl md:text-3xl text-white">
+                    {stat.value}
+                  </div>
+                  <div className="font-mono text-xs text-white/40 tracking-widest uppercase mt-1">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Scroll indicator */}
         <motion.div
@@ -275,37 +378,43 @@ export default function Home() {
       </section>
 
       {/* ── COUNTDOWN ── */}
-      <section className="relative py-20 border-t border-white/5 overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 100% at 50% 50%, rgba(0,212,255,0.04) 0%, transparent 70%)",
-          }}
-        />
+      <section className="relative py-24 border-t border-white/5 overflow-hidden bg-[#0a121e]">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
           >
-            <span className="tag text-xs mb-6 inline-block">Event Begins In</span>
-            <h2 className="font-display text-3xl font-bold text-white mb-10 tracking-wider">
+            <div className="inline-flex items-center gap-3 mb-6">
+              <div className="h-px w-6 bg-white/10" />
+              <span className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase">Registration Status</span>
+              <div className="h-px w-6 bg-white/10" />
+            </div>
+            
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-12 tracking-wider">
               The Countdown is Live
             </h2>
-            <div className="flex justify-center">
+
+            <div className="flex justify-center mb-12 scale-110 md:scale-125">
               <CountdownTimer targetDate="2025-03-15T10:00:00" />
             </div>
-            <div className="mt-8 flex items-center justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-white/30">📅</span>
-                <span className="font-body text-white/50">March 15–17, 2025</span>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-12">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">📅</span>
+                <div className="text-left">
+                  <p className="font-mono text-[9px] uppercase tracking-widest text-white/30">Dates</p>
+                  <p className="font-body text-sm text-white/70">March 15–17, 2025</p>
+                </div>
               </div>
-              <div className="w-px h-4 bg-white/10" />
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-white/30">📍</span>
-                <span className="font-body text-white/50">Jain College Of Engineering</span>
+              <div className="hidden sm:block w-px h-8 bg-white/5" />
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">📍</span>
+                <div className="text-left">
+                  <p className="font-mono text-[9px] uppercase tracking-widest text-white/30">Location</p>
+                  <p className="font-body text-sm text-white/70">Jain College Of Engineering</p>
+                </div>
               </div>
             </div>
           </motion.div>

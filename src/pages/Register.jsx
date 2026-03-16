@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { isValidEmail } from "../utils/helpers";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", college: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", email: "", mobile: "", college: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,13 +23,14 @@ export default function Register() {
 
     if (!form.name.trim()) return setError("Please enter your full name.");
     if (!isValidEmail(form.email)) return setError("Enter a valid email.");
+    if (!/^\d{10}$/.test(form.mobile)) return setError("Mobile number must be exactly 10 digits.");
     if (!form.college.trim()) return setError("Please enter your college name.");
     if (form.password.length < 6) return setError("Password must be at least 6 characters.");
     if (form.password !== form.confirm) return setError("Passwords do not match.");
 
     setLoading(true);
     try {
-      await register(form.email, form.password, form.name, form.college);
+      await register(form.email, form.password, form.name, form.college, form.mobile);
       setSuccess(true);
       setTimeout(() => navigate("/dashboard"), 3000);
     } catch (err) {
@@ -46,6 +47,7 @@ export default function Register() {
   const fields = [
     { name: "name", label: "Full Name", type: "text", placeholder: "Aryan Sharma" },
     { name: "email", label: "Email Address", type: "email", placeholder: "aryan@iit.ac.in" },
+    { name: "mobile", label: "Mobile Number", type: "tel", placeholder: "9876543210", pattern: "[0-9]{10}" },
     { name: "college", label: "College / Institution", type: "text", placeholder: "NIT Trichy" },
     { name: "password", label: "Password", type: "password", placeholder: "••••••••" },
     { name: "confirm", label: "Confirm Password", type: "password", placeholder: "••••••••" },
@@ -76,23 +78,43 @@ export default function Register() {
               clipPath: "polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px)",
             }}
           >
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-              className="text-5xl mb-6"
-            >
-              ✓
-            </motion.div>
-            <h2 className="font-display text-2xl font-bold neon-text mb-3">
-              Registration Successful!
+            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/30">
+              <motion.span 
+                initial={{ scale: 0 }} 
+                animate={{ scale: 1 }} 
+                className="text-4xl text-green-400"
+              >
+                ✓
+              </motion.span>
+            </div>
+            
+            <h2 className="font-display text-2xl font-bold text-white mb-3 tracking-wider">
+              Verification Required
             </h2>
-            <p className="font-body text-white/50 text-sm">
-              A verification email has been sent to{" "}
-              <span className="text-neon-blue">{form.email}</span>
+            <p className="font-body text-white/50 text-sm mb-8 leading-relaxed">
+              We've sent a verification link to <br/>
+              <span className="text-neon-blue font-bold">{form.email}</span>. <br/>
+              Please verify your email address to complete registration.
             </p>
-            <p className="font-mono text-xs text-white/30 mt-4">
-              Redirecting to dashboard...
-            </p>
+
+            <div className="space-y-4">
+              <a 
+                href="https://mail.google.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-neon-filled w-full py-3 block text-center"
+                style={{ background: "linear-gradient(135deg, #4285F4, #34A853)" }}
+              >
+                Go to Gmail
+              </a>
+              
+              <Link 
+                to="/login" 
+                className="text-white/30 hover:text-white text-xs font-mono uppercase tracking-[0.2em] block transition-colors"
+              >
+                Back to Login
+              </Link>
+            </div>
           </motion.div>
         ) : (
           <div

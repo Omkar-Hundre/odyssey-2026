@@ -88,7 +88,7 @@ export default function Navbar() {
 
           {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {navLinks.filter(link => link.path !== "/dashboard" || currentUser).map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -176,7 +176,7 @@ export default function Navbar() {
             className="fixed top-16 left-0 right-0 z-30 glass-card border-b border-neon-blue/20 py-6 px-6 md:hidden"
           >
             <div className="flex flex-col gap-4">
-              {navLinks.map((link) => (
+              {navLinks.filter(link => link.path !== "/dashboard" || currentUser).map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
