@@ -86,11 +86,10 @@ export default function Scanner() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-
-      <h1 className="text-2xl font-bold mb-6 text-center">
-        Event QR Scanner
-      </h1>
+    <div className="w-full">
+      <h2 className="text-xl font-bold mb-6 text-center text-white/80 uppercase tracking-widest font-display">
+        QR Ticket Scanner
+      </h2>
 
       {!scanning && !participant && (
         <button

@@ -40,7 +40,6 @@ function AnimatedRoutes() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/scanner" element={<Scanner />} />
           <Route path="/register-event/:eventId" element={<RegisterEvent />} />
         </Routes>
       </motion.div>
