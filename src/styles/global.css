@@ -199,3 +199,8 @@
   transform: translateY(0);
   transition: opacity 400ms, transform 400ms;
 }
+@keyframes glowMove {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
