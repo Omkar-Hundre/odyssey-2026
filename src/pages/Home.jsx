@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CountdownTimer from "../components/CountdownTimer";
 
+
 // Robot Model Configuration
 const ROBOT_SCALE = 1.5; // Increase for zoom (1.0 is default)
-const ROBOT_Y_OFFSET = "130px"; // Adjust vertical position (e.g. -100px to move up)
+const ROBOT_Y_OFFSET = "160px"; // Adjust vertical position (e.g. -100px to move up)
 
 // 3D Robot Model from splinetool using web component
 function SplineRobot() {
@@ -100,32 +101,39 @@ function SplineRobot() {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden flex justify-center lg:justify-end opacity-40 blur-sm lg:opacity-100 lg:blur-none pointer-events-none">
-      <div className="w-full lg:w-[60%] h-full relative">
-        <spline-viewer
-          ref={viewerRef}
-          url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-          loading-anim-type="spinner-small-dark"
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-            transform: `scale(${ROBOT_SCALE}) translateY(${ROBOT_Y_OFFSET})`,
-            transformOrigin: "center center",
-            pointerEvents: "auto"
-          }}
-        ></spline-viewer>
+    
+  <div className="absolute inset-0 w-full h-full z-20 overflow-hidden flex justify-center items-center opacity-40 blur-sm lg:opacity-100 lg:blur-none pointer-events-none">
+    
+    <div className="w-full lg:w-[60%] h-full relative flex items-center justify-center">
 
-        {/* Bottom fade to blend seamlessly into the content below */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[200px] z-10 pointer-events-none"
-          style={{
-            background: "linear-gradient(to bottom, transparent 0%, #080f18 100%)"
-          }}
-        ></div>
-      </div>
+      {/* Blue Glow Behind Robot */}
+<div className="absolute w-[700px] h-[700px] bg-blue-500/20 blur-[180px] rounded-full -z-10"></div>
+      <spline-viewer
+        ref={viewerRef}
+        url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+        loading-anim-type="spinner-small-dark"
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+          transform: `scale(${ROBOT_SCALE}) translateY(${ROBOT_Y_OFFSET})`,
+          transformOrigin: "center center",
+          pointerEvents: "auto"
+        }}
+      ></spline-viewer>
+
+      {/* Bottom fade */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[200px] z-10 pointer-events-none"
+        style={{
+          background: "linear-gradient(to bottom, transparent 0%, #080f18 100%)"
+        }}
+      ></div>
+
     </div>
-  );
+
+  </div>
+);
 }
 
 // Animated background grid with particles
@@ -269,95 +277,62 @@ export default function Home() {
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#020617] text-white">
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#080f18]">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#020617]">
         <ParticleField />
         <SplineRobot />
 
-        <div className="container mx-auto px-6 relative z-10 text-center lg:text-left w-full h-full flex flex-col justify-center">
+        {/* Glowing ODYSSEY title behind the robot */}
+<div className="pointer-events-none absolute inset-x-0 top-[220px] md:top-[150px] flex justify-center z-10">          <h1 className="font-display font-black tracking-[0.35em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#60a5fa] to-[#1d4ed8] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
+            ODYSSEY
+          </h1>
+        </div>
+
+        <div className="flex items-center justify-center h-screen">
           <motion.div
             style={{ y: heroY, opacity: heroOpacity }}
-            className="w-full max-w-xl lg:max-w-2xl pt-20 lg:pt-0 mx-auto lg:mx-0"
+            className="w-full max-w-xl lg:max-w-2xl pt-24 lg:pt-0 mx-auto lg:mx-0"
           >
             {/* Top label */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex items-center justify-center lg:justify-start gap-3 mb-8"
-            >
-              <div className="h-px w-8 bg-neon-blue" />
-              <span className="tag text-xs tracking-widest text-neon-blue uppercase">Jain College Of Engineering, Belagavi</span>
-              <div className="h-px w-8 bg-neon-blue" />
-            </motion.div>
-
-            {/* Main title */}
+            {/* College Name Above ODYSSEY */}
+            <div className="pointer-events-none absolute inset-x-0 top-28 flex justify-center z-20">
+              <span className="font-mono text-[20px] md:text-sm
+tracking-[0.4em] text-cyan-300 uppercase">
+                Jain College Of Engineering, Belagavi
+              </span>
+            </div>
+            {/* Main title (screen-reader only, visual title rendered behind robot) */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
             >
-              <h1 className="font-display font-black tracking-widest leading-none mb-4 text-white">
-                <span className="block text-6xl md:text-7xl lg:text-8xl">
-                  ODYSSEY
-                </span>
+              <h1 className="sr-only">
+                ODYSSEY – National Level Techno Cultural Fest
               </h1>
-              <div className="flex items-center justify-center lg:justify-start gap-4 mt-2">
-                <p className="font-mono text-white/70 text-sm tracking-[0.2em] uppercase">
-                  NATIONAL LEVEL TECHNO CULTURAL FEST
+              {/* Left Text */}
+              <div className="absolute left-[34%] top-64 z-20 text-left">
+                <p className="font-mono text-[10px] md:text-xs tracking-[0.35em] text-white/60 uppercase">
+                  NATIONAL LEVEL
+                </p>
+              </div>
+
+              {/* Right Text */}
+              <div className="absolute right-[30%] top-64 z-20 text-right">
+                <p className="font-mono text-[10px] md:text-xs tracking-[0.35em] text-white/60 uppercase">
+                  TECHNO CULTURAL FEST
                 </p>
               </div>
             </motion.div>
 
             {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="font-body text-base md:text-lg text-white/70 max-w-lg mt-8 leading-relaxed mx-auto lg:mx-0"
-            >
-              Where intelligence meets innovation. Three days of competitions, workshops,
-              and ideas that will define the next decade of technology.
-            </motion.p>
+
 
             {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-10"
-            >
-              <Link to="/events" className="btn-neon-filled text-sm w-48 text-center bg-white text-black border-none hover:bg-gray-200 shadow-none">
-                View Events
-              </Link>
-              <Link to="/register" className="btn-neon text-sm w-48 text-center border border-white/20 hover:border-white/50 hover:bg-white/5 text-white">
-                Register Now
-              </Link>
-            </motion.div>
 
             {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              className="flex items-center justify-center lg:justify-start gap-10 mt-14"
-            >
-              {[
-                { value: "20+", label: "Events" },
-                { value: "5000+", label: "Participants" },
-                { value: "3", label: "Days" },
-              ].map((stat, i) => (
-                <div key={i} className="text-center lg:text-left">
-                  <div className="font-display font-bold text-2xl md:text-3xl text-white">
-                    {stat.value}
-                  </div>
-                  <div className="font-mono text-xs text-white/40 tracking-widest uppercase mt-1">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+
           </motion.div>
         </div>
 
@@ -378,7 +353,7 @@ export default function Home() {
       </section>
 
       {/* ── COUNTDOWN ── */}
-      <section className="relative py-24 border-t border-white/5 overflow-hidden bg-[#0a121e]">
+      <section className="relative py-24 border-t border-white/5 overflow-hidden bg-[#050b14]">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0 }}
@@ -386,13 +361,13 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="inline-flex items-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur">
               <div className="h-px w-6 bg-white/10" />
               <span className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase">Registration Status</span>
               <div className="h-px w-6 bg-white/10" />
             </div>
-            
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-12 tracking-wider">
+
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-10 tracking-[0.25em] uppercase">
               The Countdown is Live
             </h2>
 
@@ -422,7 +397,7 @@ export default function Home() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="py-24 border-t border-white/5">
+      <section className="py-24 border-t border-white/5 bg-[#020617]">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -430,8 +405,12 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="tag text-xs mb-4 inline-block">What Awaits</span>
-            <h2 className="section-title">Experience ODYSSEY</h2>
+            <span className="tag text-xs mb-4 inline-block tracking-[0.25em] uppercase text-cyan-300">
+              What Awaits
+            </span>
+            <h2 className="section-title text-white tracking-[0.25em] uppercase">
+              Experience ODYSSEY
+            </h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -443,7 +422,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -6 }}
-                className="glass-card p-6 group cursor-default"
+                className="glass-card p-6 group cursor-default rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md"
                 style={{
                   clipPath: "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
                 }}
@@ -464,7 +443,7 @@ export default function Home() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section className="py-20 border-t border-white/5 relative overflow-hidden">
+      <section className="py-20 border-t border-white/5 relative overflow-hidden bg-[#020617]">
         <div
           className="absolute inset-0"
           style={{

@@ -90,7 +90,7 @@ export default function Events() {
   }, [activeCategory, search, events]);
 
   return (
-    <div className="min-h-screen pt-28 pb-20">
+    <div className="min-h-screen pt-28 pb-20 bg-[#020617] text-white">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Header */}
@@ -101,11 +101,19 @@ export default function Events() {
           className="mb-14"
         >
 
-          <span className="tag text-xs mb-4 inline-block">ODYSSEY 2026</span>
+          <div className="inline-flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur">
+            <div className="h-px w-6 bg-cyan-400/60" />
+            <span className="font-mono text-[10px] tracking-[0.3em] text-cyan-300 uppercase">
+              Odyssey 2026
+            </span>
+            <div className="h-px w-6 bg-cyan-400/60" />
+          </div>
 
-          <h1 className="section-title mb-4">Events</h1>
+          <h1 className="font-display text-3xl md:text-4xl tracking-[0.35em] uppercase text-white mb-4">
+            Events
+          </h1>
 
-          <p className="font-body text-white/50 text-lg max-w-2xl">
+          <p className="font-body text-white/50 text-sm md:text-base max-w-2xl">
             Explore competitions, workshops and challenges.
           </p>
 
@@ -124,10 +132,11 @@ export default function Events() {
                 key={cat}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 font-mono text-xs tracking-widest uppercase ${activeCategory === cat
-                  ? "bg-neon-blue text-dark-900 font-bold"
-                  : "border border-white/10 text-white/40"
-                  }`}
+                className={`px-4 py-1.5 rounded-full font-mono text-[10px] tracking-[0.25em] uppercase transition-colors ${
+                  activeCategory === cat
+                    ? "bg-cyan-400 text-slate-950 font-bold shadow-[0_0_25px_rgba(34,211,238,0.6)]"
+                    : "border border-white/10 text-white/50 hover:border-cyan-400/70 hover:text-white"
+                }`}
               >
                 {cat}
               </motion.button>
@@ -142,7 +151,7 @@ export default function Events() {
             placeholder="Search events..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="input-neon md:ml-auto w-full md:w-64"
+            className="input-neon md:ml-auto w-full md:w-64 bg-white/5 border border-white/10 text-sm placeholder:text-white/30"
           />
 
         </div>
