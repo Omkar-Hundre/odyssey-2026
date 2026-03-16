@@ -140,14 +140,14 @@ export default function Home() {
 
         {/* COLLEGE NAME */}
         <div className="absolute top-[110px] w-full text-center z-30">
-          <span className="font-mono text-sm tracking-[0.35em] text-cyan-300 uppercase">
+          <span className="font-mono text-sm tracking-[0.35em] text-[#88b688] uppercase">
             Jain College Of Engineering, Belagavi
           </span>
         </div>
 
         {/* ODYSSEY TITLE */}
         <div className="pointer-events-none absolute inset-x-0 top-[200px] md:top-[150px] flex justify-center z-30">
-          <h1 className="font-display font-black tracking-[0.35em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#60a5fa] to-[#1d4ed8] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
+          <h1 className="font-display font-black tracking-[0.30em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#871da7] to-[#d81d55] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
             ODYSSEY
           </h1>
         </div>
