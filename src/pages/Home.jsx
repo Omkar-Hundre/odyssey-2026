@@ -1,14 +1,10 @@
 // src/pages/Home.jsx
 
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import CountdownTimer from "../components/CountdownTimer";
 
 /* eslint-disable react/no-unknown-property */
-
-const ROBOT_SCALE = 1.5;
-const ROBOT_Y_OFFSET = "160px";
 
 function SplineRobot() {
   const viewerRef = useRef(null);
@@ -28,19 +24,20 @@ function SplineRobot() {
   }, []);
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-20">
+    <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
 
       {/* Glow */}
-      <div className="absolute w-[850px] h-[850px] bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-cyan-400/30 blur-[220px] rounded-full -z-10"></div>
+      <div className="absolute w-[600px] h-[600px] bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-cyan-400/30 blur-[180px] rounded-full -z-10"></div>
 
       <spline-viewer
         ref={viewerRef}
         url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
         loading-anim-type="spinner-small-dark"
         style={{
-          width: "60%",
-          height: "100%",
-          transform: `scale(${ROBOT_SCALE}) translateY(${ROBOT_Y_OFFSET})`,
+          width: "100%",
+          height: "90%",
+          maxWidth: "900px",
+          transform: "scale(1.2) translateY(120px)",
           transformOrigin: "center center",
         }}
       ></spline-viewer>
@@ -66,12 +63,12 @@ function ParticleField() {
     resize();
     window.addEventListener("resize", resize);
 
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 35; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         size: Math.random() * 1.5 + 0.5,
       });
     }
@@ -107,37 +104,56 @@ function ParticleField() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.4 }}
+      style={{ opacity: 0.35 }}
     />
   );
 }
 
 export default function Home() {
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsMobile(true);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#020617] text-white">
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
+        {/* BACKGROUND IMAGE */}
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-sm scale-110"
+          style={{ backgroundImage: "url('/backgroundImg.jpeg')" }}
+        ></div>
+
+        {/* DARK OVERLAY */}
+        <div className="absolute inset-0 bg-black/60"></div>
+
         <ParticleField />
-        <SplineRobot />
+
+        {!isMobile && <SplineRobot />}
 
         {/* COLLEGE NAME */}
-        <div className="absolute top-[120px] w-full text-center z-20">
-          <span className="font-mono text-sm tracking-[0.4em] text-cyan-300 uppercase">
+        <div className="absolute top-[110px] w-full text-center z-30">
+          <span className="font-mono text-sm tracking-[0.35em] text-cyan-300 uppercase">
             Jain College Of Engineering, Belagavi
           </span>
         </div>
 
         {/* ODYSSEY TITLE */}
-        <div className="pointer-events-none absolute inset-x-0 top-[220px] md:top-[150px] flex justify-center z-10">          <h1 className="font-display font-black tracking-[0.35em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#60a5fa] to-[#1d4ed8] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
+        <div className="pointer-events-none absolute inset-x-0 top-[200px] md:top-[150px] flex justify-center z-30">
+          <h1 className="font-display font-black tracking-[0.35em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#60a5fa] to-[#1d4ed8] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
             ODYSSEY
           </h1>
         </div>
 
         {/* SIDE TEXT */}
-        <div className="absolute top-[250px] w-full flex justify-between px-[26%] z-20">
-
+        <div className="absolute top-[260px] w-full flex justify-between px-[22%] z-30">
           <p className="font-mono text-xs tracking-[0.35em] text-white/60 uppercase">
             NATIONAL LEVEL
           </p>
@@ -145,18 +161,7 @@ export default function Home() {
           <p className="font-mono text-xs tracking-[0.35em] text-white/60 uppercase">
             TECHNO CULTURAL FEST
           </p>
-
         </div>
-
-        {/* SCROLL INDICATOR */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-10 text-center"
-        >
-          <span className="text-xs text-white/30 tracking-widest">SCROLL</span>
-        </motion.div>
 
       </section>
 
