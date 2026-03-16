@@ -15,6 +15,7 @@ import {
 import { db } from "../firebase/firebase-config";
 import { useAuth } from "../context/AuthContext";
 import { formatDate, DEMO_EVENTS } from "../utils/helpers";
+import Scanner from "./Scanner";
 
 export default function Admin() {
 
@@ -49,7 +50,7 @@ export default function Admin() {
     maxRegistrations: 100,
   });
 
-  const TABS = ["events", "create", "registrations"];
+  const TABS = ["events", "create", "registrations", "scanner"];
 
   useEffect(() => {
 
@@ -747,6 +748,15 @@ export default function Admin() {
 
           </div>
 
+        )}
+
+        {/* SCANNER */}
+        {activeTab === "scanner" && (
+          <div className="glass-card p-10 flex justify-center">
+            <div className="w-full max-w-xl">
+              <Scanner />
+            </div>
+          </div>
         )}
 
       </div>

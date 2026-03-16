@@ -92,8 +92,6 @@ export default function Footer() {
                 { label: "Register", path: "/register" },
                 { label: "Login", path: "/login" },
                 { label: "Dashboard", path: "/dashboard", reqAuth: true },
-                { label: "admin", path: "/admin", reqAuth: true },
-                { label: "scanner", path: "/scanner", reqAuth: true },
               ].filter((link) => !link.reqAuth || currentUser).map((link) => (
                 <Link
                   key={link.path}
