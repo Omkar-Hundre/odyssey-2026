@@ -8,13 +8,10 @@ import {
   query,
   where,
   onSnapshot,
-  getDoc,
-  doc
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase-config";
 import { useAuth } from "../context/AuthContext";
-import { formatDate } from "../utils/helpers";
 
 import QRCode from "react-qr-code";
 

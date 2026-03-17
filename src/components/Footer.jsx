@@ -59,16 +59,15 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <svg viewBox="0 0 40 40" className="w-8 h-8">
-                <defs>
-                  <linearGradient id="footerLogo" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00d4ff" />
-                    <stop offset="100%" stopColor="#9b59ff" />
-                  </linearGradient>
-                </defs>
-                <polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="url(#footerLogo)" opacity="0.9" />
-                <text x="20" y="25" fontFamily="Orbitron" fontSize="13" fontWeight="bold" fill="white" textAnchor="middle">N</text>
-              </svg>
+             <Link to="/" className="flex items-center group">
+            <motion.img
+              whileHover={{ scale: 1.08 }}
+              transition={{ duration: 0.3 }}
+              src="/odysseyLogo.png"
+              alt="Odyssey Logo"
+              className="h-10 w-auto object-contain"
+            />
+          </Link>
               <span className="font-display font-bold text-lg tracking-widest neon-text">ODYSSEY 2026</span>
             </div>
             <p className="font-body text-white/40 text-sm leading-relaxed">
