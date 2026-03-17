@@ -89,6 +89,7 @@ export const DEMO_EVENTS = [
     poster: null,
     registrations: 87,
     maxRegistrations: 200,
+    whatsappLink: "",
   },
   {
     id: "evt002",
@@ -103,6 +104,7 @@ export const DEMO_EVENTS = [
     poster: null,
     registrations: 45,
     maxRegistrations: 100,
+    whatsappLink: "",
   },
   {
     id: "evt003",
@@ -117,6 +119,7 @@ export const DEMO_EVENTS = [
     poster: null,
     registrations: 32,
     maxRegistrations: 60,
+    whatsappLink: "",
   },
   {
     id: "evt004",
@@ -131,6 +134,7 @@ export const DEMO_EVENTS = [
     poster: null,
     registrations: 63,
     maxRegistrations: 120,
+    whatsappLink: "",
   },
   {
     id: "evt005",
@@ -145,6 +149,7 @@ export const DEMO_EVENTS = [
     poster: null,
     registrations: 55,
     maxRegistrations: 80,
+    whatsappLink: "",
   },
   {
     id: "evt006",
@@ -159,5 +164,6 @@ export const DEMO_EVENTS = [
     poster: null,
     registrations: 120,
     maxRegistrations: 300,
+    whatsappLink: "",
   },
 ];
