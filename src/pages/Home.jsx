@@ -1,197 +1,83 @@
 // src/pages/Home.jsx
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import CountdownTimer from "../components/CountdownTimer";
 
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
-// Robot Model Configuration
-const ROBOT_SCALE = 1.5; // Increase for zoom (1.0 is default)
-const ROBOT_Y_OFFSET = "160px"; // Adjust vertical position (e.g. -100px to move up)
+/* eslint-disable react/no-unknown-property */
 
-// 3D Robot Model from splinetool using web component
 function SplineRobot() {
   const viewerRef = useRef(null);
 
   useEffect(() => {
-    // Add the spline-viewer script dynamically
     const scriptId = "spline-viewer-script";
+
     if (!document.getElementById(scriptId)) {
       const script = document.createElement("script");
       script.id = scriptId;
       script.type = "module";
-      script.src = "https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js";
+      script.src =
+        "https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js";
+
       document.head.appendChild(script);
     }
-
-    // Mouse event forwarding logic
-    let rafPending = false;
-    let pendingEvent = null;
-
-    const dispatchToSpline = () => {
-      rafPending = false;
-      if (!pendingEvent || !viewerRef.current) return;
-      const e = pendingEvent;
-      pendingEvent = null;
-
-      const viewer = viewerRef.current;
-      // Spline usually listens on the canvas inside the shadow DOM
-      const target = viewer.shadowRoot?.querySelector('canvas');
-      if (!target) return;
-
-      // Create and dispatch a new mousemove event exactly as expected by Spline
-      const mouseEvent = new MouseEvent('mousemove', {
-        bubbles: true,
-        cancelable: true,
-        clientX: e.clientX,
-        clientY: e.clientY,
-        screenX: e.screenX,
-        screenY: e.screenY,
-        movementX: e.movementX || 0,
-        movementY: e.movementY || 0,
-        view: window,
-      });
-
-      target.dispatchEvent(mouseEvent);
-    };
-
-    const handleMouseMove = (e) => {
-      pendingEvent = e;
-      if (!rafPending) {
-        rafPending = true;
-        requestAnimationFrame(dispatchToSpline);
-      }
-    };
-
-    const handleTouchMove = (e) => {
-      const t = e.touches[0] || (e.changedTouches && e.changedTouches[0]);
-      if (!t) return;
-      pendingEvent = {
-        clientX: t.clientX,
-        clientY: t.clientY,
-        screenX: t.screenX,
-        screenY: t.screenY
-      };
-      if (!rafPending) {
-        rafPending = true;
-        requestAnimationFrame(dispatchToSpline);
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-
-    // Attempt to remove watermarks if possible
-    const removeWatermark = () => {
-      const v = viewerRef.current;
-      if (v && v.shadowRoot) {
-        const logo = v.shadowRoot.querySelector('#logo') || v.shadowRoot.querySelector('a[href*="spline"]');
-        if (logo) logo.style.display = 'none';
-      }
-    };
-
-    const interval = setInterval(removeWatermark, 1000);
-    setTimeout(() => clearInterval(interval), 10000);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
-    };
   }, []);
 
   return (
-    
-  <div className="absolute inset-0 w-full h-full z-20 overflow-hidden flex justify-center items-center opacity-40 blur-sm lg:opacity-100 lg:blur-none pointer-events-none">
-    
-    <div className="w-full lg:w-[60%] h-full relative flex items-center justify-center">
+    <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
 
-      {/* Blue Glow Behind Robot */}
-<div className="absolute w-[700px] h-[700px] bg-blue-500/20 blur-[180px] rounded-full -z-10"></div>
+      <div className="absolute w-[600px] h-[600px] bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-cyan-400/30 blur-[180px] rounded-full -z-10"></div>
+
       <spline-viewer
         ref={viewerRef}
         url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
         loading-anim-type="spinner-small-dark"
         style={{
           width: "100%",
-          height: "100%",
-          display: "block",
-          transform: `scale(${ROBOT_SCALE}) translateY(${ROBOT_Y_OFFSET})`,
+          height: "90%",
+          maxWidth: "900px",
+          transform: "scale(1.2) translateY(120px)",
           transformOrigin: "center center",
-          pointerEvents: "auto"
         }}
       ></spline-viewer>
-
-      {/* Bottom fade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[200px] z-10 pointer-events-none"
-        style={{
-          background: "linear-gradient(to bottom, transparent 0%, #080f18 100%)"
-        }}
-      ></div>
-
     </div>
-
-  </div>
-);
+  );
 }
 
-// Animated background grid with particles
 function ParticleField() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    let animId;
+
     let particles = [];
+    let animationId;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+
     resize();
     window.addEventListener("resize", resize);
 
-    // Create particles
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 35; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         size: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.5 + 0.1,
-        color: Math.random() > 0.5 ? "#00d4ff" : "#9b59ff",
       });
     }
 
-    function draw() {
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 212, 255, ${0.08 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw particles
       particles.forEach((p) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + Math.floor(p.opacity * 255).toString(16).padStart(2, "0");
+        ctx.fillStyle = "rgba(0,212,255,0.6)";
         ctx.fill();
 
         p.x += p.vx;
@@ -201,13 +87,14 @@ function ParticleField() {
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
       });
 
-      animId = requestAnimationFrame(draw);
-    }
+      animationId = requestAnimationFrame(draw);
+    };
+
     draw();
 
     return () => {
+      cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
-      cancelAnimationFrame(animId);
     };
   }, []);
 
@@ -215,271 +102,274 @@ function ParticleField() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.35 }}
     />
   );
 }
 
-// Hexagon grid decoration
-function HexGrid() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <svg
-        className="absolute bottom-0 right-0 w-96 h-96 opacity-5"
-        viewBox="0 0 400 400"
-      >
-        {[...Array(30)].map((_, i) => {
-          const col = i % 6;
-          const row = Math.floor(i / 6);
-          const x = 35 + col * 60 + (row % 2 === 0 ? 0 : 30);
-          const y = 35 + row * 52;
-          return (
-            <polygon
-              key={i}
-              points={`${x},${y - 28} ${x + 24},${y - 14} ${x + 24},${y + 14} ${x},${y + 28} ${x - 24},${y + 14} ${x - 24},${y - 14}`}
-              fill="none"
-              stroke="#00d4ff"
-              strokeWidth="1"
-            />
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
-const features = [
-  {
-    icon: "◈",
-    title: "AI/ML Competitions",
-    desc: "Compete with the nation's best in machine learning challenges with real-world datasets.",
-  },
-  {
-    icon: "⬡",
-    title: "48hr Hackathon",
-    desc: "Build, break, and innovate. Turn your ideas into prototypes with industry mentors.",
-  },
-  {
-    icon: "◎",
-    title: "Expert Workshops",
-    desc: "Hands-on sessions led by engineers from Google DeepMind, OpenAI, and ISRO.",
-  },
-  {
-    icon: "◆",
-    title: "₹5L+ in Prizes",
-    desc: "Massive prize pool across all events, plus internship offers and cloud credits.",
-  },
-];
-
 export default function Home() {
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 600], [0, -150]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeDay, setActiveDay] = useState(1);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsMobile(true);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#020617] text-white">
-      {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#020617]">
-        <ParticleField />
-        <SplineRobot />
 
-        {/* Glowing ODYSSEY title behind the robot */}
-<div className="pointer-events-none absolute inset-x-0 top-[220px] md:top-[150px] flex justify-center z-10">          <h1 className="font-display font-black tracking-[0.35em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#60a5fa] to-[#1d4ed8] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
+      {/* HERO */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-sm scale-110"
+          style={{ backgroundImage: "url('/backgroundImg.jpeg')" }}
+        ></div>
+
+        <div className="absolute inset-0 bg-black/60"></div>
+
+        <ParticleField />
+
+        {!isMobile && <SplineRobot />}
+
+        <div className="absolute top-[110px] w-full text-center z-30">
+          <span className="font-mono text-sm tracking-[0.35em] text-[#88b688] uppercase">
+            Jain College Of Engineering, Belagavi
+          </span>
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 top-[200px] md:top-[150px] flex justify-center z-30">
+          <h1 className="font-display font-black tracking-[0.30em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#871da7] to-[#d81d55] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
             ODYSSEY
           </h1>
         </div>
 
-        <div className="flex items-center justify-center h-screen">
-          <motion.div
-            style={{ y: heroY, opacity: heroOpacity }}
-            className="w-full max-w-xl lg:max-w-2xl pt-24 lg:pt-0 mx-auto lg:mx-0"
-          >
-            {/* Top label */}
-            {/* College Name Above ODYSSEY */}
-            <div className="pointer-events-none absolute inset-x-0 top-28 flex justify-center z-20">
-              <span className="font-mono text-[20px] md:text-sm
-tracking-[0.4em] text-cyan-300 uppercase">
-                Jain College Of Engineering, Belagavi
-              </span>
-            </div>
-            {/* Main title (screen-reader only, visual title rendered behind robot) */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
+        <div className="absolute top-[260px] w-full flex justify-between px-[22%] z-30">
+          <p className="font-mono text-xs tracking-[0.35em] text-white/60 uppercase">
+            NATIONAL LEVEL
+          </p>
+
+          <p className="font-mono text-xs tracking-[0.35em] text-white/60 uppercase">
+            TECHNO CULTURAL FEST
+          </p>
+        </div>
+
+      </section>
+
+
+      {/* ITINERARY */}
+      <section className="py-28 border-t border-white/5 bg-[#050b14]">
+
+        <div className="max-w-6xl mx-auto px-6">
+
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-[0.25em] uppercase">
+            Odyssey Schedule
+          </h2>
+
+          {/* DAY SWITCHER */}
+          <div className="flex justify-center gap-6 mb-20">
+
+            <button
+              onClick={() => setActiveDay(1)}
+              className={`px-6 py-2 rounded-full border transition ${activeDay === 1
+                ? "bg-cyan-500 text-black border-cyan-500"
+                : "border-white/20 text-white/70 hover:border-cyan-400"
+                }`}
             >
-              <h1 className="sr-only">
-                ODYSSEY – National Level Techno Cultural Fest
-              </h1>
-              {/* Left Text */}
-              <div className="absolute left-[34%] top-64 z-20 text-left">
-                <p className="font-mono text-[10px] md:text-xs tracking-[0.35em] text-white/60 uppercase">
-                  NATIONAL LEVEL
-                </p>
-              </div>
+              Day 1
+            </button>
 
-              {/* Right Text */}
-              <div className="absolute right-[30%] top-64 z-20 text-right">
-                <p className="font-mono text-[10px] md:text-xs tracking-[0.35em] text-white/60 uppercase">
-                  TECHNO CULTURAL FEST
-                </p>
-              </div>
-            </motion.div>
+            <button
+              onClick={() => setActiveDay(2)}
+              className={`px-6 py-2 rounded-full border transition ${activeDay === 2
+                ? "bg-purple-500 text-black border-purple-500"
+                : "border-white/20 text-white/70 hover:border-purple-400"
+                }`}
+            >
+              Day 2
+            </button>
 
-            {/* Subtitle */}
-
-
-            {/* CTA Buttons */}
-
-            {/* Stats */}
-
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="font-mono text-xs text-white/20 tracking-widest">SCROLL</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-px h-8 bg-gradient-to-b from-neon-blue/60 to-transparent"
-          />
-        </motion.div>
-      </section>
-
-      {/* ── COUNTDOWN ── */}
-      <section className="relative py-24 border-t border-white/5 overflow-hidden bg-[#050b14]">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur">
-              <div className="h-px w-6 bg-white/10" />
-              <span className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase">Registration Status</span>
-              <div className="h-px w-6 bg-white/10" />
-            </div>
-
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-10 tracking-[0.25em] uppercase">
-              The Countdown is Live
-            </h2>
-
-            <div className="flex justify-center mb-12 scale-110 md:scale-125">
-              <CountdownTimer targetDate="2025-03-15T10:00:00" />
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-12">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">📅</span>
-                <div className="text-left">
-                  <p className="font-mono text-[9px] uppercase tracking-widest text-white/30">Dates</p>
-                  <p className="font-body text-sm text-white/70">March 15–17, 2025</p>
-                </div>
-              </div>
-              <div className="hidden sm:block w-px h-8 bg-white/5" />
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">📍</span>
-                <div className="text-left">
-                  <p className="font-mono text-[9px] uppercase tracking-widest text-white/30">Location</p>
-                  <p className="font-body text-sm text-white/70">Jain College Of Engineering</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── FEATURES ── */}
-      <section className="py-24 border-t border-white/5 bg-[#020617]">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="tag text-xs mb-4 inline-block tracking-[0.25em] uppercase text-cyan-300">
-              What Awaits
-            </span>
-            <h2 className="section-title text-white tracking-[0.25em] uppercase">
-              Experience ODYSSEY
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((f, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -6 }}
-                className="glass-card p-6 group cursor-default rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md"
-                style={{
-                  clipPath: "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                }}
-              >
-                <div
-                  className="text-3xl mb-4 font-display font-bold neon-text group-hover:text-glow-blue transition-all duration-300"
-                >
-                  {f.icon}
-                </div>
-                <h3 className="font-display font-semibold text-sm tracking-wider text-white mb-3 uppercase">
-                  {f.title}
-                </h3>
-                <p className="font-body text-sm text-white/40 leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
           </div>
-        </div>
-      </section>
 
-      {/* ── CTA BANNER ── */}
-      <section className="py-20 border-t border-white/5 relative overflow-hidden bg-[#020617]">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(155,89,255,0.06) 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="font-display font-black text-4xl md:text-5xl text-white tracking-wider mb-6">
-              Ready to compete?
-            </h2>
-            <p className="font-body text-white/50 text-lg mb-10">
-              Join thousands of students from across India. Registrations close February 28.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/register" className="btn-neon-filled text-sm w-full sm:w-48 text-center">
-                Register Free
-              </Link>
-              <Link to="/events" className="btn-neon text-sm w-full sm:w-48 text-center">
-                Browse Events
-              </Link>
+
+          {/* ================= DAY 1 ================= */}
+          {activeDay === 1 && (
+            <div className="relative">
+
+              <div className="absolute left-1/2 -translate-x-1/2 h-full w-[3px] bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500"></div>
+
+              <div className="space-y-20">
+
+                <div className="flex items-center">
+                  <div className="w-1/2 pr-12 text-right">
+                    <p className="text-xs text-cyan-400 tracking-widest">09:00 AM</p>
+                    <h3 className="text-xl font-semibold mt-2">Opening Ceremony</h3>
+                  </div>
+
+                  <div className="w-6 h-6 bg-cyan-400 rounded-full border-4 border-[#050b14]"></div>
+                  <div className="w-1/2"></div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-1/2"></div>
+
+                  <div className="w-6 h-6 bg-purple-500 rounded-full border-4 border-[#050b14]"></div>
+
+                  <div className="w-1/2 pl-12">
+                    <p className="text-xs text-purple-400 tracking-widest">10:00 AM</p>
+                    <h3 className="text-xl font-semibold mt-2">Hackathon Begins</h3>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-1/2 pr-12 text-right">
+                    <p className="text-xs text-pink-400 tracking-widest">02:00 PM</p>
+                    <h3 className="text-xl font-semibold mt-2">Technical Events</h3>
+                  </div>
+
+                  <div className="w-6 h-6 bg-pink-500 rounded-full border-4 border-[#050b14]"></div>
+                  <div className="w-1/2"></div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-1/2"></div>
+
+                  <div className="w-6 h-6 bg-cyan-400 rounded-full border-4 border-[#050b14]"></div>
+
+                  <div className="w-1/2 pl-12">
+                    <p className="text-xs text-cyan-400 tracking-widest">05:30 PM</p>
+                    <h3 className="text-xl font-semibold mt-2">Cultural Performances</h3>
+                  </div>
+                </div>
+
+              </div>
             </div>
-          </motion.div>
+          )}
+
+
+          {/* ================= DAY 2 ================= */}
+          {activeDay === 2 && (
+            <div className="relative">
+
+              <div className="absolute left-1/2 -translate-x-1/2 h-full w-[3px] bg-gradient-to-b from-purple-500 via-pink-500 to-cyan-400"></div>
+
+              <div className="space-y-20">
+
+                <div className="flex items-center">
+                  <div className="w-1/2 pr-12 text-right">
+                    <p className="text-xs text-purple-400 tracking-widest">09:30 AM</p>
+                    <h3 className="text-xl font-semibold mt-2">Gaming Tournament</h3>
+                  </div>
+
+                  <div className="w-6 h-6 bg-purple-500 rounded-full border-4 border-[#050b14]"></div>
+                  <div className="w-1/2"></div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-1/2"></div>
+
+                  <div className="w-6 h-6 bg-pink-500 rounded-full border-4 border-[#050b14]"></div>
+
+                  <div className="w-1/2 pl-12">
+                    <p className="text-xs text-pink-400 tracking-widest">11:30 AM</p>
+                    <h3 className="text-xl font-semibold mt-2">Workshops</h3>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-1/2 pr-12 text-right">
+                    <p className="text-xs text-cyan-400 tracking-widest">03:00 PM</p>
+                    <h3 className="text-xl font-semibold mt-2">Hackathon Finals</h3>
+                  </div>
+
+                  <div className="w-6 h-6 bg-cyan-400 rounded-full border-4 border-[#050b14]"></div>
+                  <div className="w-1/2"></div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-1/2"></div>
+
+                  <div className="w-6 h-6 bg-purple-500 rounded-full border-4 border-[#050b14]"></div>
+
+                  <div className="w-1/2 pl-12">
+                    <p className="text-xs text-purple-400 tracking-widest">06:00 PM</p>
+                    <h3 className="text-xl font-semibold mt-2">Closing Ceremony</h3>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          )}
+
         </div>
+
+      </section>
+      {/* LOCATION */}
+      <section className="py-28 border-t border-white/5 bg-[#020617]">
+
+        <div className="max-w-6xl mx-auto px-6">
+
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-[0.25em] uppercase">
+            Find Us
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+
+            {/* Address Info */}
+            <div className="space-y-6">
+
+              <h3 className="text-xl font-semibold text-cyan-400">
+                Jain College of Engineering, Belagavi
+              </h3>
+
+              <p className="text-white/70 leading-relaxed">
+                Odyssey is hosted at Jain College of Engineering, located in the
+                southern part of Belagavi. The campus is well connected by road
+                and easily accessible from the city center.
+              </p>
+
+              <div className="space-y-2 text-white/70 text-sm">
+
+                <p>📍 Jain College of Engineering</p>
+                <p>Tipu Sultan Nagar, Hunchanatti Cross</p>
+                <p>Udyambag Industrial Area</p>
+                <p>Belagavi, Karnataka 590008</p>
+                <p>India</p>
+
+              </div>
+
+              <a
+                href="https://maps.app.goo.gl/VN6HMdWjDRcpKQuf9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-semibold hover:scale-105 transition"
+              >
+                Open in Google Maps
+              </a>
+
+            </div>
+            {/* Google Map */}
+            <div className="rounded-xl border border-white/10 shadow-xl hover:scale-[1.02] transition">
+
+              <iframe
+                title="Jain College of Engineering Belagavi Map"
+                src="https://www.google.com/maps?q=Jain+College+of+Engineering+Belagavi+Tipu+Sultan+Nagar+Hunchanatti+Cross&output=embed"
+                width="100%"
+                height="350"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </section>
     </div>
   );
