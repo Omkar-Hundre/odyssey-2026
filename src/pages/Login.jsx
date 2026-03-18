@@ -9,13 +9,16 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [resetLoading, setResetLoading] = useState(false);
+  const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setMessage("");
 
     if (!isValidEmail(email)) return setError("Enter a valid email address.");
     if (password.length < 6) return setError("Password must be at least 6 characters.");
@@ -32,6 +35,25 @@ export default function Login() {
       else setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    if (!email || !isValidEmail(email)) {
+      return setError("Please enter your email address first to reset password.");
+    }
+    
+    setError("");
+    setMessage("");
+    setResetLoading(true);
+
+    try {
+      await resetPassword(email);
+      setMessage("Check your inbox for further instructions.");
+    } catch (err) {
+      setError("Failed to reset password. Please check your email.");
+    } finally {
+      setResetLoading(false);
     }
   }
 
@@ -115,7 +137,19 @@ export default function Login() {
               />
             </div>
 
-            {/* Error */}
+            {/* Forgot Password Link */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={resetLoading}
+                className="text-white/40 hover:text-neon-blue font-mono text-[10px] tracking-widest uppercase transition-colors"
+              >
+                {resetLoading ? "Processing..." : "Forgot Password?"}
+              </button>
+            </div>
+
+            {/* Error or Success Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
@@ -126,11 +160,21 @@ export default function Login() {
               </motion.div>
             )}
 
+            {message && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-2 py-2 px-3 border border-green-500/30 bg-green-500/10"
+              >
+                <span className="text-green-400 text-xs font-mono">✔ {message}</span>
+              </motion.div>
+            )}
+
             {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="btn-neon-filled w-full py-3 mt-2 relative"
+              className="btn-neon-filled w-full py-3 mt-4 relative"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

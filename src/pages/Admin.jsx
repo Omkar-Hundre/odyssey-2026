@@ -48,6 +48,7 @@ export default function Admin() {
     minTeamSize: 1,
     maxTeamSize: 1,
     maxRegistrations: 100,
+    whatsappLink: "",
   });
 
   const TABS = ["events", "create", "registrations", "scanner"];
@@ -168,6 +169,7 @@ export default function Admin() {
       minTeamSize: event.minTeamSize || 1,
       maxTeamSize: event.maxTeamSize || 1,
       maxRegistrations: event.maxRegistrations || 100,
+      whatsappLink: event.whatsappLink || "",
     });
 
     setActiveTab("create");
@@ -313,7 +315,8 @@ export default function Admin() {
         registrationFee: "",
         coordinators: [{ name: "", phone: "" }],
         maxTeamSize: 1,
-        maxRegistrations: 100
+        maxRegistrations: 100,
+        whatsappLink: ""
       });
 
       setPosterFile(null);
@@ -512,6 +515,13 @@ export default function Admin() {
                 value={form.venue}
                 onChange={handleFormChange}
                 placeholder="Venue"
+                className="input-neon w-full"
+              />
+              <input
+                name="whatsappLink"
+                value={form.whatsappLink}
+                onChange={handleFormChange}
+                placeholder="WhatsApp Group Invite Link"
                 className="input-neon w-full"
               />
               <input
