@@ -1,47 +1,75 @@
 // src/pages/Home.jsx
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { collection, onSnapshot, query, limit, where } from "firebase/firestore";
+import { db } from "../firebase/firebase-config";
+import { useAuth } from "../context/AuthContext";
+import EventCard from "../components/EventCard";
+import { DEMO_EVENTS } from "../utils/helpers";
+import homeBg from "../assets/home_bg.mp4";
 
-/* eslint-disable react/no-unknown-property */
+const AI_TOOLS = [
+  { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com" },
+  { name: "Midjourney", category: "Art", color: "from-purple-500 to-pink-500", logo: "midjourney.com" },
+  { name: "Gemini", category: "Multimodal", color: "from-blue-500 to-cyan-400", logo: "google.com" },
+  { name: "Claude", category: "Reasoning", color: "from-orange-400 to-red-500", logo: "anthropic.com" },
+  { name: "Stable Diffusion", category: "Generative", color: "from-indigo-500 to-purple-400", logo: "stability.ai" },
+  { name: "GitHub Copilot", category: "Coding", color: "from-slate-700 to-slate-900", logo: "github.com" },
+  { name: "Jasper", category: "Writing", color: "from-blue-400 to-indigo-600", logo: "jasper.ai" },
+  { name: "Perplexity", category: "Search", color: "from-cyan-400 to-blue-500", logo: "perplexity.ai" },
+  { name: "ElevenLabs", category: "Voice", color: "from-yellow-400 to-orange-500", logo: "elevenlabs.io" },
+  { name: "Runway", category: "Video", color: "from-pink-500 to-rose-600", logo: "runwayml.com" },
+  { name: "Notion AI", category: "Productivity", color: "from-gray-600 to-black", logo: "notion.so" },
+  { name: "DeepL", category: "Translation", color: "from-blue-800 to-blue-900", logo: "deepl.com" },
+  { name: "Firefly", category: "Design", color: "from-orange-500 to-red-600", logo: "adobe.com" },
+  { name: "Sora", category: "Video", color: "from-cyan-500 to-blue-600", logo: "openai.com" },
+  { name: "Mistral", category: "LLM", color: "from-orange-400 to-yellow-500", logo: "mistral.ai" },
+  { name: "Cursor", category: "IDE", color: "from-blue-500 to-indigo-600", logo: "cursor.com" },
+  { name: "Grammarly", category: "Editing", color: "from-green-500 to-emerald-600", logo: "grammarly.com" },
+  { name: "Canva Magic", category: "Design", color: "from-purple-400 to-blue-500", logo: "canva.com" },
+  { name: "Otter.ai", category: "Meetings", color: "from-blue-400 to-cyan-400", logo: "otter.ai" },
+  { name: "Descript", category: "Audio/Video", color: "from-descript.com", logo: "descript.com" },
+  { name: "Murf", category: "TTS", color: "from-purple-600 to-indigo-700", logo: "murf.ai" },
+  { name: "Synthesia", category: "Avatars", color: "from-indigo-500 to-blue-600", logo: "synthesia.io" },
+  { name: "Phind", category: "Search", color: "from-blue-400 to-emerald-500", logo: "phind.com" },
+  { name: "Grok", category: "LLM", color: "from-gray-800 to-black", logo: "x.ai" },
+  { name: "Dall-E", category: "Image", color: "from-orange-500 to-yellow-500", logo: "openai.com" },
+  { name: "Whisper", category: "Speech", color: "from-cyan-500 to-emerald-500", logo: "openai.com" },
+  { name: "Copy.ai", category: "Marketing", color: "from-blue-500 to-indigo-500", logo: "copy.ai" },
+  { name: "Fireflies", category: "Productivity", color: "from-cyan-400 to-blue-600", logo: "fireflies.ai" },
+  { name: "Tabnine", category: "Coding", color: "from-indigo-600 to-purple-600", logo: "tabnine.com" },
+  { name: "Replit Ghost", category: "Coding", color: "from-red-500 to-orange-600", logo: "replit.com" },
+];
 
-function SplineRobot() {
-  const viewerRef = useRef(null);
+const CATEGORIES = ["All", "Central Events", "CSE Dept.", "AI/ML Dept.", "ECE Dept.", "Mechanical Dept.", "MBA", "MCA"];
 
-  useEffect(() => {
-    const scriptId = "spline-viewer-script";
+function ToolLogo({ tool }) {
+  const [error, setError] = useState(false);
+  const logoUrl = `https://logo.clearbit.com/${tool.logo}`;
 
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.type = "module";
-      script.src =
-        "https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js";
-
-      document.head.appendChild(script);
-    }
-  }, []);
+  if (error || !tool.logo) {
+    return (
+      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/20 group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+        {tool.name.charAt(0)}
+      </div>
+    );
+  }
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-
-      <div className="absolute w-[600px] h-[600px] bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-cyan-400/30 blur-[180px] rounded-full -z-10"></div>
-
-      <spline-viewer
-        ref={viewerRef}
-        url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-        loading-anim-type="spinner-small-dark"
-        style={{
-          width: "100%",
-          height: "90%",
-          maxWidth: "900px",
-          transform: "scale(1.2) translateY(120px)",
-          transformOrigin: "center center",
-        }}
-      ></spline-viewer>
+    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-300 overflow-hidden shadow-lg shadow-black/20 flex-shrink-0">
+      <img
+        src={logoUrl}
+        alt={tool.name}
+        className="w-full h-full object-contain"
+        onError={() => setError(true)}
+      />
     </div>
   );
 }
+
+
 
 function ParticleField() {
   const canvasRef = useRef(null);
@@ -107,269 +135,377 @@ function ParticleField() {
   );
 }
 
+const SCHEDULE_DATA = {
+  1: [
+    { time: "09:00 AM", title: "Opening Ceremony", description: "Grand inauguration of Odyssey 2026 with guest speakers and cultural highlights.", category: "Main Stage" },
+    { time: "10:00 AM", title: "Hackathon Begins", description: "24-hour coding marathon kicks off. Teams start building innovative solutions.", category: "Tech Hub" },
+    { time: "02:00 PM", title: "Technical Events", description: "Paper presentations, coding challenges, and tech quizzes across multiple venues.", category: "Workshops" },
+    { time: "05:30 PM", title: "Cultural Performances", description: "Evening of dance, music, and fashion showcase by students from across the country.", category: "Cultural" },
+  ],
+  2: [
+    { time: "09:30 AM", title: "Gaming Tournament", description: "Competitive esports showdown featuring popular titles. Strategy and skill on display.", category: "Esports Arena" },
+    { time: "11:30 AM", title: "Workshops", description: "Hands-on sessions on AI, Blockchain, and Sustainable Engineering by industry experts.", category: "Learning" },
+    { time: "03:00 PM", title: "Hackathon Finals", description: "The top teams present their prototypes to an elite panel of judges.", category: "Tech Hub" },
+    { time: "06:00 PM", title: "Closing Ceremony", description: "Awards distribution and grand finale to the Odyssey 2026 fest.", category: "Main Stage" },
+  ],
+};
+
 export default function Home() {
-  const [isMobile, setIsMobile] = useState(false);
+  const { currentUser, userProfile } = useAuth();
   const [activeDay, setActiveDay] = useState(1);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    if (window.innerWidth < 768) {
-      setIsMobile(true);
-    }
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const scrollDuration = isMobile ? 25 : 45;
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch Events
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "events"), (snap) => {
+      if (!snap.empty) {
+        const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setEvents(data);
+      } else {
+        setEvents(DEMO_EVENTS);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // FETCH USER REGISTRATIONS (REALTIME)
+  useEffect(() => {
+    if (!userProfile?.festID) return;
+    const q = query(
+      collection(db, "registrations"),
+      where("teamFestIds", "array-contains", userProfile.festID)
+    );
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const regs = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setRegisteredEvents(regs);
+    });
+    return () => unsubscribe();
+  }, [userProfile]);
+
+  // Filter Events
+  useEffect(() => {
+    let result = events;
+    if (activeCategory !== "All") {
+      result = result.filter((e) => e.category === activeCategory);
+    }
+    // Show only first 5 events + room for View More card
+    setFilteredEvents(result.slice(0, 5));
+  }, [activeCategory, events]);
 
   return (
     <div className="min-h-screen bg-[#020617] text-white">
 
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-
-        <div
-          className="absolute inset-0 bg-cover bg-center blur-sm scale-110"
-          style={{ backgroundImage: "url('/backgroundImg.jpeg')" }}
-        ></div>
+      <section className="relative min-h-screen flex items-start justify-start overflow-hidden">
+        <div className="absolute bottom-0 w-full h-[20vh] bg-gradient-to-b from-transparent to-[#050b14] z-40"></div>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105"
+        >
+          <source src={homeBg} type="video/mp4" />
+        </video>
 
         <div className="absolute inset-0 bg-black/60"></div>
 
         <ParticleField />
 
-        {!isMobile && <SplineRobot />}
 
-        <div className="absolute top-[110px] w-full text-center z-30">
-          <span className="font-mono text-sm tracking-[0.35em] text-[#88b688] uppercase">
-            Jain College Of Engineering, Belagavi
-          </span>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 top-[200px] md:top-[150px] flex justify-center z-30">
-          <h1 className="font-display font-black tracking-[0.30em] text-transparent text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text bg-gradient-to-b from-[#7dd3fc] via-[#871da7] to-[#d81d55] drop-shadow-[0_0_45px_rgba(59,130,246,0.95)]">
-            ODYSSEY
-          </h1>
-        </div>
-
-        <div className="absolute top-[260px] w-full flex justify-between px-[22%] z-30">
-          <p className="font-mono text-xs tracking-[0.35em] text-white/60 uppercase">
-            NATIONAL LEVEL
-          </p>
-
-          <p className="font-mono text-xs tracking-[0.35em] text-white/60 uppercase">
-            TECHNO CULTURAL FEST
-          </p>
-        </div>
-
-      </section>
-
-
-      {/* ITINERARY */}
-      <section className="py-28 border-t border-white/5 bg-[#050b14]">
-
-        <div className="max-w-6xl mx-auto px-6">
-
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-[0.25em] uppercase">
-            Odyssey Schedule
-          </h2>
-
-          {/* DAY SWITCHER */}
-          <div className="flex justify-center gap-6 mb-20">
-
-            <button
-              onClick={() => setActiveDay(1)}
-              className={`px-6 py-2 rounded-full border transition ${activeDay === 1
-                ? "bg-cyan-500 text-black border-cyan-500"
-                : "border-white/20 text-white/70 hover:border-cyan-400"
-                }`}
-            >
-              Day 1
-            </button>
-
-            <button
-              onClick={() => setActiveDay(2)}
-              className={`px-6 py-2 rounded-full border transition ${activeDay === 2
-                ? "bg-purple-500 text-black border-purple-500"
-                : "border-white/20 text-white/70 hover:border-purple-400"
-                }`}
-            >
-              Day 2
-            </button>
-
+        {/* CENTRAL CONTENT */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-30 text-center px-4 pt-32">
+          <div className="mb-6 animate-fade-in">
+            <span className="font-mono text-xs md:text-sm tracking-[0.4em] text-cyan-400 font-medium uppercase drop-shadow-sm">
+              Jain College Of Engineering, Belagavi
+            </span>
           </div>
 
+          <div className="relative group">
+            <h1 className="gloock-regular text-transparent text-[11vw] sm:text-6xl md:text-7xl lg:text-9xl bg-clip-text bg-gradient-to-b from-white via-[#7dd3fc] to-[#d81d55] drop-shadow-[0_0_60px_rgba(59,130,246,0.6)] py-4 transition-all duration-500 group-hover:scale-[1.02] tracking-tighter sm:tracking-normal">
+              ODYSSEY
+            </h1>
+            {/* Subtle light streak */}
+          </div>
 
-          {/* ================= DAY 1 ================= */}
-          {activeDay === 1 && (
-            <div className="relative">
-
-              <div className="absolute left-1/2 -translate-x-1/2 h-full w-[3px] bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500"></div>
-
-              <div className="space-y-20">
-
-                <div className="flex items-center">
-                  <div className="w-1/2 pr-12 text-right">
-                    <p className="text-xs text-cyan-400 tracking-widest">09:00 AM</p>
-                    <h3 className="text-xl font-semibold mt-2">Opening Ceremony</h3>
-                  </div>
-
-                  <div className="w-6 h-6 bg-cyan-400 rounded-full border-4 border-[#050b14]"></div>
-                  <div className="w-1/2"></div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="w-1/2"></div>
-
-                  <div className="w-6 h-6 bg-purple-500 rounded-full border-4 border-[#050b14]"></div>
-
-                  <div className="w-1/2 pl-12">
-                    <p className="text-xs text-purple-400 tracking-widest">10:00 AM</p>
-                    <h3 className="text-xl font-semibold mt-2">Hackathon Begins</h3>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="w-1/2 pr-12 text-right">
-                    <p className="text-xs text-pink-400 tracking-widest">02:00 PM</p>
-                    <h3 className="text-xl font-semibold mt-2">Technical Events</h3>
-                  </div>
-
-                  <div className="w-6 h-6 bg-pink-500 rounded-full border-4 border-[#050b14]"></div>
-                  <div className="w-1/2"></div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="w-1/2"></div>
-
-                  <div className="w-6 h-6 bg-cyan-400 rounded-full border-4 border-[#050b14]"></div>
-
-                  <div className="w-1/2 pl-12">
-                    <p className="text-xs text-cyan-400 tracking-widest">05:30 PM</p>
-                    <h3 className="text-xl font-semibold mt-2">Cultural Performances</h3>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          )}
-
-
-          {/* ================= DAY 2 ================= */}
-          {activeDay === 2 && (
-            <div className="relative">
-
-              <div className="absolute left-1/2 -translate-x-1/2 h-full w-[3px] bg-gradient-to-b from-purple-500 via-pink-500 to-cyan-400"></div>
-
-              <div className="space-y-20">
-
-                <div className="flex items-center">
-                  <div className="w-1/2 pr-12 text-right">
-                    <p className="text-xs text-purple-400 tracking-widest">09:30 AM</p>
-                    <h3 className="text-xl font-semibold mt-2">Gaming Tournament</h3>
-                  </div>
-
-                  <div className="w-6 h-6 bg-purple-500 rounded-full border-4 border-[#050b14]"></div>
-                  <div className="w-1/2"></div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="w-1/2"></div>
-
-                  <div className="w-6 h-6 bg-pink-500 rounded-full border-4 border-[#050b14]"></div>
-
-                  <div className="w-1/2 pl-12">
-                    <p className="text-xs text-pink-400 tracking-widest">11:30 AM</p>
-                    <h3 className="text-xl font-semibold mt-2">Workshops</h3>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="w-1/2 pr-12 text-right">
-                    <p className="text-xs text-cyan-400 tracking-widest">03:00 PM</p>
-                    <h3 className="text-xl font-semibold mt-2">Hackathon Finals</h3>
-                  </div>
-
-                  <div className="w-6 h-6 bg-cyan-400 rounded-full border-4 border-[#050b14]"></div>
-                  <div className="w-1/2"></div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="w-1/2"></div>
-
-                  <div className="w-6 h-6 bg-purple-500 rounded-full border-4 border-[#050b14]"></div>
-
-                  <div className="w-1/2 pl-12">
-                    <p className="text-xs text-purple-400 tracking-widest">06:00 PM</p>
-                    <h3 className="text-xl font-semibold mt-2">Closing Ceremony</h3>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-          )}
-
-        </div>
-
-      </section>
-      {/* LOCATION */}
-      <section className="py-28 border-t border-white/5 bg-[#020617]">
-
-        <div className="max-w-6xl mx-auto px-6">
-
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-[0.25em] uppercase">
-            Find Us
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-
-            {/* Address Info */}
-            <div className="space-y-6">
-
-              <h3 className="text-xl font-semibold text-cyan-400">
-                Jain College of Engineering, Belagavi
-              </h3>
-
-              <p className="text-white/70 leading-relaxed">
-                Odyssey is hosted at Jain College of Engineering, located in the
-                southern part of Belagavi. The campus is well connected by road
-                and easily accessible from the city center.
+          <div className="mt-8 flex flex-col md:flex-row items-center gap-4 md:gap-16">
+            <div className="flex flex-col items-center">
+              <p className="font-mono text-[10px] md:text-xs tracking-[0.5em] text-white/70 uppercase">
+                NATIONAL LEVEL
               </p>
-
-              <div className="space-y-2 text-white/70 text-sm">
-
-                <p>📍 Jain College of Engineering</p>
-                <p>Tipu Sultan Nagar, Hunchanatti Cross</p>
-                <p>Udyambag Industrial Area</p>
-                <p>Belagavi, Karnataka 590008</p>
-                <p>India</p>
-
-              </div>
-
-              <a
-                href="https://maps.app.goo.gl/VN6HMdWjDRcpKQuf9"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-semibold hover:scale-105 transition"
-              >
-                Open in Google Maps
-              </a>
-
-            </div>
-            {/* Google Map */}
-            <div className="rounded-xl border border-white/10 shadow-xl hover:scale-[1.02] transition">
-
-              <iframe
-                title="Jain College of Engineering Belagavi Map"
-                src="https://www.google.com/maps?q=Jain+College+of+Engineering+Belagavi+Tipu+Sultan+Nagar+Hunchanatti+Cross&output=embed"
-                width="100%"
-                height="350"
-                style={{ border: 0 }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-
+              <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mt-2"></div>
             </div>
 
+            <div className="hidden md:block w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+
+            <div className="flex flex-col items-center">
+              <p className="font-mono text-[10px] md:text-xs tracking-[0.5em] text-white/70 uppercase">
+                TECHNO CULTURAL FEST
+              </p>
+              <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent mt-2"></div>
+            </div>
           </div>
 
+          <div className="mt-12 flex flex-wrap justify-center gap-6 animate-fade-in-up">
+            <Link to="/events" className="btn-neon-filled group">
+              <span className="relative z-10 font-bold">Register Now</span>
+            </Link>
+            <button className="btn-neon group">
+              <span className="relative z-10 font-bold">Rule Book</span>
+            </button>
+          </div>
+
+          {/* AI Tools Marquee */}
+          <div className="mt-20 w-full overflow-hidden py-10 relative">
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-20 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-20 pointer-events-none"></div>
+
+            <motion.div
+              className="flex gap-8 whitespace-nowrap"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ duration: scrollDuration, repeat: Infinity, ease: "linear" }}
+            >
+              {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
+                <div
+                  key={idx}
+                  className="inline-flex items-center gap-6 px-10 py-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group cursor-default"
+                >
+                  <ToolLogo tool={tool} />
+
+                  <div>
+                    <div className={`text-[10px] font-mono font-bold tracking-[0.2em] uppercase mb-1 bg-clip-text text-transparent bg-gradient-to-r ${tool.color}`}>
+                      {tool.category}
+                    </div>
+                    <div className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
+                      {tool.name}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              className="flex gap-8 whitespace-nowrap mt-4"
+              animate={{ x: ["-50%", "0%"] }}
+              transition={{ duration: scrollDuration, repeat: Infinity, ease: "linear" }}
+            >
+              {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
+                <div
+                  key={idx}
+                  className="inline-flex items-center gap-6 px-10 py-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group cursor-default"
+                >
+                  {/* Styled Logo Placeholder */}
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/20 group-hover:scale-110 transition-transform duration-300`}>
+                    {tool.name.charAt(0)}
+                  </div>
+
+                  <div>
+                    <div className={`text-[10px] font-mono font-bold tracking-[0.2em] uppercase mb-1 bg-clip-text text-transparent bg-gradient-to-r ${tool.color}`}>
+                      {tool.category}
+                    </div>
+                    <div className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
+                      {tool.name}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
 
+      </section>
+
+      {/* EVENTS CATEGORIZED */}
+      <section className="py-24 bg-[#050b14] relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-white mb-4">
+                Explore the <span className="text-cyan-400">Odyssey</span>
+              </h2>
+              <p className="text-white/50 max-w-xl font-mono text-sm uppercase tracking-widest">
+                Discover events filtered by your area of interest
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${activeCategory === cat
+                    ? "bg-cyan-400 text-slate-950 font-bold shadow-[0_0_20px_rgba(34,211,238,0.4)]"
+                    : "bg-white/5 text-white/40 border border-white/10 hover:border-cyan-400/50 hover:text-white"
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence mode="popLayout">
+              {loading ? (
+                <div className="col-span-full py-20 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-cyan-400 mx-auto mb-4"></div>
+                  <p className="text-white/30 font-mono text-xs uppercase tracking-widest">Initialising Grid...</p>
+                </div>
+              ) : filteredEvents.length === 0 ? (
+                <div className="col-span-full py-20 text-center bg-white/5 rounded-3xl border border-white/10 italic text-white/30">
+                  No events found in this category yet.
+                </div>
+              ) : (
+                <>
+                  {filteredEvents.map((event) => (
+                    <motion.div
+                      key={event.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <EventCard event={event} registeredEvents={registeredEvents} />
+                    </motion.div>
+                  ))}
+
+                  {/* View More Card */}
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex"
+                  >
+                    <Link
+                      to="/events"
+                      className="group relative w-full h-full min-h-[300px] flex flex-col items-center justify-center p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-cyan-400/50 transition-all duration-500 overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="relative z-10 w-16 h-16 rounded-full bg-cyan-400/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-all duration-500">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                      <h3 className="relative z-10 text-2xl font-bold text-white mb-2 tracking-tight">View All Events</h3>
+                      <p className="relative z-10 text-cyan-400/60 font-mono text-[10px] uppercase tracking-widest">Explore 50+ competitions</p>
+                    </Link>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </section>
+
+      {/* LOCATION */}
+      <section className="py-32 border-t border-white/5 bg-[#020617] relative overflow-hidden">
+        {/* Decorative Background Glows */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 blur-[120px] rounded-full"></div>
+
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 inline-block mb-4">
+              Find Us
+            </h2>
+            <div className="h-1 w-24 bg-gradient-to-r from-cyan-400 to-purple-500 mx-auto rounded-full"></div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            {/* Address Information Card */}
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+
+              <div className="relative p-8 md:p-10 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl space-y-8">
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                    <span className="text-cyan-400">Jain College of Engineering</span>
+                  </h3>
+                  <p className="text-white/60 leading-relaxed text-lg">
+                    Odyssey 2026 is hosted at the prestigious Jain College of Engineering, Belagavi. A hub of innovation and cultural excellence.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="mt-1 w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 text-cyan-400">
+                      📍
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold">Address</p>
+                      <p className="text-white/60 text-sm md:text-base">
+                        Tipu Sultan Nagar, Hunchanatti Cross,<br />
+                        Udyambag Industrial Area, Belagavi,<br />
+                        Karnataka 590008, India
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="mt-1 w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0 text-purple-400">
+                      📧
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold">Contact</p>
+                      <p className="text-white/60 text-sm md:text-base">info@jce.edu.in</p>
+                    </div>
+                  </div>
+                </div>
+
+                <a
+                  href="https://maps.app.goo.gl/VN6HMdWjDRcpKQuf9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/btn relative w-full inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-300 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 overflow-hidden"
+                >
+                  <div className="absolute inset-0 w-0 bg-gradient-to-r from-cyan-500 to-purple-500 transition-all duration-500 ease-out group-hover/btn:w-full"></div>
+                  <span className="relative z-10 flex items-center gap-2">
+                    GET DIRECTIONS
+                    <span className="transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            {/* Map Container */}
+            <div className="relative group p-2">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/30 to-cyan-500/30 rounded-[2rem] blur-lg opacity-40 group-hover:opacity-75 transition duration-500"></div>
+              <div className="relative rounded-[1.8rem] overflow-hidden border border-white/20 bg-black aspect-square md:aspect-auto md:h-[500px] shadow-2xl">
+                <iframe
+                  title="Jain College of Engineering Belagavi Map"
+                  src="https://www.google.com/maps?q=Jain+College+of+Engineering+Belagavi+Tipu+Sultan+Nagar+Hunchanatti+Cross&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%)' }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+
+              {/* Decorative Corner Accents */}
+              <div className="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-cyan-400/50 rounded-tl-2xl pointer-events-none"></div>
+              <div className="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-purple-400/50 rounded-br-2xl pointer-events-none"></div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -38,7 +38,7 @@ export default function Navbar() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled
+        className={`fixed top-0 left-0 right-0 z-[120] transition-all duration-500 ${scrolled
             ? "py-3 glass-card border-b border-neon-blue/20"
             : "py-5 bg-transparent"
           }`}
@@ -136,50 +136,64 @@ export default function Navbar() {
       {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-16 left-0 right-0 z-30 glass-card border-b border-neon-blue/20 py-6 px-6 md:hidden"
-          >
-            <div className="flex flex-col gap-4">
-              {navLinks.filter(link => link.path !== "/dashboard" || currentUser).map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`font-body font-semibold tracking-widest uppercase text-sm py-2 border-b border-white/5 ${location.pathname === link.path
-                      ? "text-neon-blue"
-                      : "text-white/60"
-                    }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="flex gap-3 mt-2">
-                {currentUser ? (
-                  <button
-                    onClick={handleLogout}
-                    className="btn-neon text-xs py-2 flex-1"
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl md:hidden"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="fixed top-16 left-4 right-4 z-[110] glass-card border border-white/10 rounded-2xl py-6 px-6 md:hidden overflow-hidden"
+            >
+              {/* Decorative Glow inside menu */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-neon-blue/10 blur-3xl -z-10"></div>
+              
+              <div className="flex flex-col gap-4 relative z-10">
+                {navLinks.filter(link => link.path !== "/dashboard" || currentUser).map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`font-body font-semibold tracking-widest uppercase text-sm py-4 border-b border-white/5 last:border-0 ${location.pathname === link.path
+                        ? "text-neon-cyan text-glow-blue"
+                        : "text-white/60"
+                      }`}
                   >
-                    Logout
-                  </button>
-                ) : (
-                  <>
-                    <Link to="/login" className="btn-neon text-xs py-2 flex-1 text-center">
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
-                      className="btn-neon-filled text-xs py-2 flex-1 text-center"
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="flex flex-col gap-3 mt-4">
+                  {currentUser ? (
+                    <button
+                      onClick={handleLogout}
+                      className="btn-neon text-xs py-3 w-full"
                     >
-                      Register
-                    </Link>
-                  </>
-                )}
+                      Logout
+                    </button>
+                  ) : (
+                    <>
+                      <Link to="/login" className="btn-neon text-xs py-3 w-full text-center">
+                        Login
+                      </Link>
+                      <Link
+                        to="/register"
+                        className="btn-neon-filled text-xs py-3 w-full text-center"
+                      >
+                        Register
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
