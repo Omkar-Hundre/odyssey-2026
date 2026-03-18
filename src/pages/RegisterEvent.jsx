@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useParams, useNavigate } from "react-router-dom";
+import paymentQR from "../assets/PaymentQR.jpg";
 
 import { db } from "../firebase/firebase-config";
 
@@ -383,6 +384,27 @@ export default function RegisterEvent() {
 
                                 </div>
                             ))}
+
+                            <div className="p-4 border border-white/10 bg-white/5 rounded-xl space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-white/60 text-sm font-mono uppercase tracking-wider">Registration Fee</span>
+                                    <span className="text-xl font-bold neon-text">₹{event?.registrationFee}</span>
+                                </div>
+                                
+                                <div className="space-y-2 text-center">
+                                    <p className="text-[10px] text-white/40 uppercase tracking-[0.2em]">Scan to Pay</p>
+                                    <div className="bg-white p-2 rounded-xl inline-block shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                        <img 
+                                            src={paymentQR} 
+                                            alt="Payment QR" 
+                                            className="w-48 h-48 object-contain"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-cyan-400/60 uppercase tracking-widest mt-2">
+                                        Pay exactly ₹{event?.registrationFee} to register
+                                    </p>
+                                </div>
+                            </div>
 
                             <input
                                 placeholder="UTR number, Transaction Number, Unique Transaction ID"

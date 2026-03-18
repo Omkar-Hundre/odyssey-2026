@@ -32,7 +32,6 @@ export default function Register() {
     try {
       await register(form.email, form.password, form.name, form.college, form.mobile);
       setSuccess(true);
-      setTimeout(() => navigate("/dashboard"), 3000);
     } catch (err) {
       if (err.code === "auth/email-already-in-use")
         setError("This email is already registered. Try logging in.");
@@ -107,6 +106,13 @@ export default function Register() {
               >
                 Go to Gmail
               </a>
+
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="btn-neon w-full py-3 text-sm"
+              >
+                Proceed to Dashboard
+              </button>
               
               <Link 
                 to="/login" 
