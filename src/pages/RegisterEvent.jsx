@@ -390,13 +390,13 @@ export default function RegisterEvent() {
                                     <span className="text-white/60 text-sm font-mono uppercase tracking-wider">Registration Fee</span>
                                     <span className="text-xl font-bold neon-text">₹{event?.registrationFee}</span>
                                 </div>
-                                
+
                                 <div className="space-y-2 text-center">
                                     <p className="text-[10px] text-white/40 uppercase tracking-[0.2em]">Scan to Pay</p>
                                     <div className="bg-white p-2 rounded-xl inline-block shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                        <img 
-                                            src={paymentQR} 
-                                            alt="Payment QR" 
+                                        <img
+                                            src={paymentQR}
+                                            alt="Payment QR"
                                             className="w-48 h-48 object-contain"
                                         />
                                     </div>
@@ -449,21 +449,32 @@ export default function RegisterEvent() {
                                 {event.eventName || event.title}
                             </h2>
 
-                            <p className="text-sm text-white/70 mb-2">
-                                📍 Venue: {event.venue}
-                            </p>
+                            <div className="flex items-center justify-between mt-3 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm">
 
-                            <p className="text-sm text-white/70 mb-2">
-                                💰 Fee: ₹{event.registrationFee}
-                            </p>
+                                {/* Team Size */}
+                                <div className="flex items-center gap-1 text-white/80">
+                                    <span className="text-base">👥</span>
+                                    <span>
+                                        {event.minTeamSize === event.maxTeamSize
+                                            ? `${event.minTeamSize}`
+                                            : `${event.minTeamSize}-${event.maxTeamSize}`}
+                                    </span>
+                                </div>
 
-                            <p className="text-sm text-white/70 mb-4">
-                                👥 Team Size: {event.minTeamSize} - {event.maxTeamSize}
-                            </p>
+                                {/* Fee */}
+                                <div className="px-2 py-1 rounded-md bg-white/10 text-white font-semibold">
+                                    ₹{event.registrationFee || 0}
+                                </div>
 
-                            <p className="text-sm text-white/70 leading-relaxed mb-6">
-                                {event.description}
-                            </p>
+                            </div>
+                            <div className="text-sm text-white/70 leading-relaxed mb-6 space-y-1 mt-5">
+                                {event.description
+                                    ?.split("\n")
+                                    .filter(line => line.trim() !== "")
+                                    .map((line, index) => (
+                                        <p key={index}>{line.trim()}</p>
+                                    ))}
+                            </div>
 
                             <h3 className="text-white/60 text-sm mb-2 mt-4">
                                 COORDINATORS
