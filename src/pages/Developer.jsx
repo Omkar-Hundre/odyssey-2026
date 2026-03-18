@@ -133,10 +133,24 @@ export default function Developer() {
 
         {/* 🔥 Heading */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-black text-white leading-tight">
-            Meet our developers Of <br />
-            <span className="text-purple-400">Odyssey 2026</span>
-          </h1>
+          
+
+            <h1
+              className="text-5xl md:text-7xl font-black leading-none mb-4"
+              style={{
+                fontFamily: "'Syne', sans-serif",
+                background: "linear-gradient(135deg, #ffffff 0%, #c4b5fd 40%, #f472b6 80%, #ffffff 100%)",
+                backgroundSize: "200% 200%",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                animation: "gradientShift 6s ease infinite",
+              }}
+            >
+              Meet Our
+              <br />
+              Developers
+            </h1>
+
 
         </div>
 
