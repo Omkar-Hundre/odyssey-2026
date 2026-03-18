@@ -83,19 +83,24 @@ export default function EventCard({ event, registeredEvents = [] }) {
             : event.description}
         </p>
 
-        <div className="flex justify-between text-xs text-white/40 mt-2">
+        <div className="flex items-center justify-between mt-3 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm">
 
-          <span className="font-semibold text-white">
-            👥 Team: {event.minTeamSize === event.maxTeamSize
-              ? event.minTeamSize
-              : `${event.minTeamSize}-${event.maxTeamSize}`}
-          </span>
+  {/* Team Size */}
+  <div className="flex items-center gap-1 text-white/80">
+    <span className="text-base">👥</span>
+    <span>
+      {event.minTeamSize === event.maxTeamSize
+        ? `${event.minTeamSize}`
+        : `${event.minTeamSize}-${event.maxTeamSize}`}
+    </span>
+  </div>
 
-          <span className="font-semibold text-white">
-            💰 ₹{event.registrationFee || 0}
-          </span>
+  {/* Fee */}
+  <div className="px-2 py-1 rounded-md bg-white/10 text-white font-semibold">
+    ₹{event.registrationFee || 0}
+  </div>
 
-        </div>
+</div>
 
 
 

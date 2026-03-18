@@ -239,7 +239,7 @@ export default function Home() {
           </div>
 
           <div className="relative group">
-            <h1 className="gloock-regular text-transparent text-[11vw] sm:text-6xl md:text-7xl lg:text-9xl bg-clip-text bg-gradient-to-b from-white via-[#7dd3fc] to-[#d81d55] drop-shadow-[0_0_60px_rgba(59,130,246,0.6)] py-4 transition-all duration-500 group-hover:scale-[1.02] tracking-tighter sm:tracking-normal">
+            <h1 className="gloock-regular text-transparent text-[11vw] sm:text-6xl md:text-7xl lg:text-9xl bg-clip-text bg-gradient-to-b from-white via-[#7dcffc] to-[#d81d55] drop-shadow-[0_0_60px_rgba(59,130,246,0.6)] py-4 transition-all duration-500 group-hover:scale-[1.02] tracking-wider sm:tracking-normal">
               ODYSSEY
             </h1>
             {/* Subtle light streak */}
