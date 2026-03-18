@@ -6,8 +6,8 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
-import Scanner from "./pages/Scanner";
 import RegisterEvent from "./pages/RegisterEvent"
+import Developer from "./pages/Developer";
 
 const Home = lazy(() => import("./pages/Home"));
 const Events = lazy(() => import("./pages/Events"));
@@ -41,6 +41,7 @@ function AnimatedRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/register-event/:eventId" element={<RegisterEvent />} />
+          <Route path="/developers" element={<Developer />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

@@ -4,10 +4,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
+
 const navLinks = [
   { label: "Home", path: "/" },
   { label: "Events", path: "/events" },
   { label: "Dashboard", path: "/dashboard" },
+  { label: "Developers", path: "/developers" },
 ];
 
 export default function Navbar() {
