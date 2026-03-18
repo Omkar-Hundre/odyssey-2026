@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         display: ['Orbitron', 'sans-serif'],
+        gloock: ['Gloock', 'serif'],
         body: ['Rajdhani', 'sans-serif'],
         mono: ['Share Tech Mono', 'monospace'],
       },

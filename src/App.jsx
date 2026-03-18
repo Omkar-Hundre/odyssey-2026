@@ -54,7 +54,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 3000);
+    }, 3000); // 3 seconds for the original SVG animation
     return () => clearTimeout(timer);
   }, []);
 
