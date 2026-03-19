@@ -9,8 +9,8 @@ import { useAuth } from "../context/AuthContext";
 import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 import homeBg from "../assets/home_bg.mp4";
-import introVideo from "../assets/home_bg2_compressed.mp4";
-import introAudio from "../assets/intro_compressed.mp3";
+import introVideo from "../assets/home_bg2.mp4";
+import introAudio from "../assets/intro.mp3";
 
 const AI_TOOLS = [
   { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com" },
@@ -157,13 +157,11 @@ export default function Home() {
   const [activeDay, setActiveDay] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showIntro, setShowIntro] = useState(true);
-  const videoRef = useRef(null);
-  const audioRef = useRef(null);
-  const [soundOn, setSoundOn] = useState(false);
 
 
 
   const handleVideoEnd = () => {
+    sessionStorage.setItem("introPlayed", "true");
     setShowIntro(false);
   };
 
@@ -180,6 +178,8 @@ export default function Home() {
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const audioRef = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
 
   // Fetch Events
   useEffect(() => {
@@ -239,23 +239,14 @@ export default function Home() {
   return (
 
     <div className="min-h-screen bg-[#020617] text-white">
-      <AnimatePresence>
-        {showIntro && (
-          <motion.div
-            key="intro-overlay"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
-          >
+      {showIntro && (
+        <div className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-opacity duration-700 ${showIntro ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
 
           {/* VIDEO (always muted) */}
           <video
-            ref={videoRef}
             autoPlay
             muted
             playsInline
-            onCanPlayThrough={() => window.dispatchEvent(new Event('introVideoReady'))}
             onEnded={handleVideoEnd}
             className="w-full h-full object-cover"
           >
@@ -281,9 +272,8 @@ export default function Home() {
             Skip →
           </button>
 
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-start justify-start overflow-hidden">
@@ -304,10 +294,10 @@ export default function Home() {
 
 
         {/* CENTRAL CONTENT */}
-        <div className="absolute inset-0 flex flex-col items-center justify-start z-30 text-center px-4 pt-20 md:pt-32">
+        <div className="absolute inset-0 flex flex-col items-center justify-startr z-30 text-center pt-20 md:pt-32">
 
           {/* College Name */}
-          <div className="mb-4 md:mb-6 animate-fade-in">
+          <div className="mb-4 md:mb-6 animate-fade-in px-4">
             <span className="font-mono text-[10px] sm:text-xs md:text-sm 
     tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.35em] 
     font-medium uppercase 
@@ -339,13 +329,13 @@ export default function Home() {
     text-[14vw] sm:text-6xl md:text-7xl lg:text-9xl 
     bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-500 to-pink-500
     drop-shadow-[0_0_50px_rgba(99,102,241,0.6)]
-    py-2 md:py-4 
+    py-2 md:py-4 px-4
     tracking-[0.02em] sm:tracking-[0.05rem] md:tracking-[0.08rem] lg:tracking-[0.12rem]">
             ODYSSEY
           </motion.h1>
 
           {/* Subtitle */}
-          <div className="mt-6 md:mt-8 flex flex-col md:flex-row items-center gap-3 md:gap-16">
+          <div className="mt-6 md:mt-8 flex flex-col md:flex-row items-center gap-3 md:gap-16 px-4">
 
             <div className="flex flex-col items-center">
               <p className="font-mono text-[9px] sm:text-[10px] md:text-xs 
@@ -377,7 +367,7 @@ export default function Home() {
 
           </div>
           {/* Buttons */}
-          <div className="mt-8 md:mt-12 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
+          <div className="mt-8 md:mt-12 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up px-4">
             <Link to="/events" className="btn-neon-filled w-full sm:w-auto">
               <span className="relative z-10 font-bold">Register Now</span>
             </Link>
@@ -386,52 +376,52 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Marquee */}
-         <div className="mt-12 md:mt-20 w-screen max-w-full overflow-hidden py-8 relative left-1/2 -translate-x-1/2">
+          {/* AI Tools Marquee */}
+          <div className="mt-20 w-full overflow-hidden py-10 relative">
 
-  {/* Softer Fade Edges */}
-  <div className="absolute left-0 top-0 bottom-0 w-10 md:w-20 bg-gradient-to-r from-[#020617] to-transparent z-20"></div>
-  <div className="absolute right-0 top-0 bottom-0 w-10 md:w-20 bg-gradient-to-l from-[#020617] to-transparent z-20"></div>
+            {/* Softer Fade Edges */}
+            <div className="absolute left-0 top-0 bottom-0 w-10 md:w-20 bg-gradient-to-r from-[#020617] to-transparent z-20"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-10 md:w-20 bg-gradient-to-l from-[#020617] to-transparent z-20"></div>
 
-  {/* TOP ROW */}
-  <div className="marquee">
-    <div className="marquee-track-left">
-      {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
-        <div key={idx} className="marquee-item group">
-          <ToolLogo tool={tool} />
-          <div>
-            <div className="text-[10px] font-mono uppercase text-white/40">
-              {tool.category}
+            {/* TOP ROW */}
+            <div className="marquee">
+              <div className="marquee-track-left">
+                {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
+                  <div key={idx} className="marquee-item group">
+                    <ToolLogo tool={tool} />
+                    <div>
+                      <div className="text-[10px] font-mono uppercase text-white/40">
+                        {tool.category}
+                      </div>
+                      <div className="text-sm md:text-base font-semibold text-white/90">
+                        {tool.name}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-sm md:text-base font-semibold text-white/90">
-              {tool.name}
+
+            {/* BOTTOM ROW */}
+            <div className="marquee mt-6">
+              <div className="marquee-track-right">
+                {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
+                  <div key={idx} className="marquee-item glow group">
+                    <ToolLogo tool={tool} />
+                    <div>
+                      <div className="text-[10px] font-mono uppercase text-white/40">
+                        {tool.category}
+                      </div>
+                      <div className="text-sm md:text-base font-semibold text-white">
+                        {tool.name}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-
-  {/* BOTTOM ROW */}
-  <div className="marquee mt-6">
-    <div className="marquee-track-right">
-      {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
-        <div key={idx} className="marquee-item glow group">
-          <ToolLogo tool={tool} />
-          <div>
-            <div className="text-[10px] font-mono uppercase text-white/40">
-              {tool.category}
-            </div>
-            <div className="text-sm md:text-base font-semibold text-white">
-              {tool.name}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-
-</div>
         </div>
       </section>
 
