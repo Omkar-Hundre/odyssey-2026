@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -12,6 +11,7 @@ import {
 
 import { db } from "../firebase/firebase-config";
 import { useAuth } from "../context/AuthContext";
+import { sendEmailVerification } from "firebase/auth";
 
 import QRCode from "react-qr-code";
 
@@ -127,6 +127,35 @@ export default function Dashboard() {
               <p><b>College:</b> {college}</p>
               <p><b>Email:</b> {email}</p>
 
+              {/* 🔥 EMAIL VERIFICATION ALERT */}
+              {!emailVerified && (
+                <div className="mt-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+
+                  <p className="text-yellow-300 text-xs font-medium">
+                    ⚠️ Email not verified
+                  </p>
+
+                  <p className="text-[10px] text-yellow-200/70 mt-1 mb-2">
+                    Please verify your email. Check inbox or spam folder.
+                  </p>
+
+                  <button
+                    onClick={async () => {
+                      try {
+                        await sendEmailVerification(currentUser);
+                        alert("Verification email sent again!");
+                      } catch (err) {
+                        alert("Error sending email");
+                      }
+                    }}
+                    className="text-[10px] px-2 py-1 border border-yellow-400 text-yellow-300 rounded"
+                  >
+                    Resend Email
+                  </button>
+
+                </div>
+              )}
+
               {festID && (
 
                 <div className="mt-6 flex flex-col items-center">
@@ -228,11 +257,18 @@ export default function Dashboard() {
                           : "text-yellow-400"
                         }`}
                     >
-                      {event.paymentStatus === "confirmed"
-                        ? "Confirmed"
-                        : event.paymentStatus === "rejected"
-                          ? "Payment Rejected"
-                          : "Payment Processing"}
+                      {event.paymentStatus === "confirmed" ? (
+                        "Confirmed"
+                      ) : event.paymentStatus === "rejected" ? (
+                        "Payment Rejected"
+                      ) : (
+                        <>
+                          <div>Payment Processing</div>
+                          <div className="text-[10px] opacity-70">
+                            (Please wait while our Admins verify the payment)
+                          </div>
+                        </>
+                      )}
                     </span>
 
                   </div>
@@ -258,23 +294,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="glass-card p-4 text-center">
-                <div className="text-2xl neon-text">
-                  —
-                </div>
-                <div className="text-xs text-white/30">
-                  Days Until Fest
-                </div>
-              </div>
-
-              <div className="glass-card p-4 text-center">
-                <div className="text-2xl neon-text">
-                  {registeredEvents.filter(e => e.maxTeamSize > 1).length}
-                </div>
-                <div className="text-xs text-white/30">
-                  Team Events
-                </div>
-              </div>
 
             </div>
 

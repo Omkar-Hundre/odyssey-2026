@@ -160,6 +160,8 @@ export default function Home() {
 
 
 
+
+
   const handleVideoEnd = () => {
     sessionStorage.setItem("introPlayed", "true");
     setShowIntro(false);

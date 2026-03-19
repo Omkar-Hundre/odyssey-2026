@@ -3,37 +3,50 @@ import { motion, useInView } from "framer-motion";
 import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
 import abhayImg from "../assets/abhay.jpg";
+import omkarImg from "../assets/omkar.jpeg"
+import bhuvanImg from "../assets/bhuvan.jpeg"
+import kishanImg from "../assets/kishan.jpeg"
+import vivekImg from "../assets/vivek.jpeg"
+
+
 
 const developers = [
   {
     id: 1,
-    name: "Aryan Mehta",
+    name: "Abhay Patange",
     role: "Lead Web Developer",
     // ❌ caption removed
     image: abhayImg, // ✅ replace with your image path
     featured: true,
-    links: { github: "#", linkedin: "#", instagram: "#" },
+    links: { github: "https://github.com/AbhayPatange", linkedin: "https://www.linkedin.com/in/abhaypatange/", instagram: "https://www.instagram.com/abhaaayyy___?igsh=aGhla3J4eHIzaXV1&utm_source=qr" },
   },
   {
     id: 2,
-    name: "Priya Sharma",
-    role: "Frontend Developer",
-    image: "/images/priya.jpg",
-    links: { github: "#", linkedin: "#", instagram: "#" },
+    name: "Omkar Hundre",
+    role: "FullStack Developer",
+    image: omkarImg,
+    links: { github: "https://github.com/Omkar-Hundre/", linkedin: "https://www.linkedin.com/in/hundreomkar", instagram: "https://www.instagram.com/hundre_omkar?igsh=MjR6aWZ0bmVkeXFm" },
   },
   {
     id: 3,
-    name: "Karan Joshi",
-    role: "Backend Developer",
-    image: "/images/karan.jpg",
-    links: { github: "#", linkedin: "#", instagram: "#" },
+    name: "Bhuvan Yerraguntla",
+    role: "FrontEnd Developer",
+    image: bhuvanImg,
+    links: { github: "https://www.linkedin.com/in/bhuvan-yerraguntla/", linkedin: "https://www.linkedin.com/in/bhuvan-yerraguntla/", instagram: "https://www.instagram.com/bhuvan_8904?igsh=MXZwcmNlMTJ5bXJqbQ==" },
   },
   {
     id: 4,
-    name: "Sneha Kulkarni",
+    name: "Kishan",
     role: "UI/UX Designer",
-    image: "/images/sneha.jpg",
-    links: { github: "#", linkedin: "#", instagram: "#" },
+    image: kishanImg,
+    links: { github: "github.com/Kishan0029", linkedin: "https://www.linkedin.com/in/kishan-revankar-97b428306?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", instagram: "https://www.instagram.com/kishan_revankar_29?utm_source=qr" },
+  },
+  {
+    id: 4,
+    name: "Vivek",
+    role: "UI/UX Designer",
+    image: vivekImg,
+    links: { github: "https://github.com/vivek-vishwakarma132", linkedin: "https://www.linkedin.com/in/vivek-sharma-34b220385?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", instagram: "https://www.instagram.com/vivekrs.007?igsh=ODAwdXllMXI3MzRk" },
   },
 ];
 
