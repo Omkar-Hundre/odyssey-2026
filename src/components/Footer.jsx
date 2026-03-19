@@ -17,12 +17,9 @@ export default function Footer() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-             <Link to="/" className="flex items-center group">
+      <div>
+        <div className="flex items-center justify-center gap-3 mb-4 mt-5">
+          <Link to="/" className="flex items-center group">
             <motion.img
               whileHover={{ scale: 1.08 }}
               transition={{ duration: 0.3 }}
@@ -31,17 +28,122 @@ export default function Footer() {
               className="h-10 w-auto object-contain"
             />
           </Link>
-              <span className="font-display font-bold text-lg tracking-widest neon-text">ODYSSEY 2026</span>
-            </div>
-           
-            <div className="mt-4">
-              <span className="tag text-xs">Jain College Of Engineering, Belagavi</span>
+          <span className="font-display font-bold text-lg tracking-widest neon-text">ODYSSEY 2026</span>
+        </div>
+
+        <div className="mt-4 flex justify-center">
+          <span className="tag text-xs">Jain College Of Engineering, Belagavi</span>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+
+          {/* EVENT INFO */}
+          <div>
+            <h3 className="text-sm font-semibold tracking-widest text-white mb-3">
+              EVENT INFO
+            </h3>
+            <div className="w-10 h-[2px] bg-neon-cyan mb-4" />
+            <a
+              href="#"
+              className="text-sm text-white/60 hover:text-neon-cyan transition"
+            >
+              RULEBOOK ODYSSEY – Download
+            </a>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold tracking-widest text-white mb-3">
+              ACADEMIC TEAM
+            </h3>
+            <div className="w-10 h-[2px] bg-neon-cyan mb-4" />
+
+            <div className="space-y-3 text-sm text-white/60">
+              <div>
+                <p className="text-white">Dr. J. Shivakumar</p>
+                <p className="text-xs text-white/40">Principal & Director</p>
+              </div>
+
+              <div>
+                <p className="text-white">Dr. S. Rohitraj </p>
+                <p className="text-xs text-white/40">Convenor</p>
+              </div>
+
+              <div>
+                <p className="text-white">Prof. Varsha Gokak</p>
+                <p className="text-xs text-white/40">Event Coordinator</p>
+              </div>
+              <div>
+                <p className="text-white">Prof. Shahak Patil</p>
+                <p className="text-xs text-white/40">SEC coordinator</p>
+              </div>
             </div>
           </div>
 
+          {/* DEVELOPERS */}
+          {/* DEVELOPERS */}
+          <div>
+            <h3 className="text-sm font-semibold tracking-widest text-white mb-3">
+              DEVELOPERS
+            </h3>
+            <div className="w-10 h-[2px] bg-neon-cyan mb-4" />
+
+            <div className="space-y-2 text-sm text-white/60">
+
+              <Link to="/developers" className="hover:text-neon-cyan transition block">
+                Abhay Patange
+              </Link>
+
+              <Link to="/developers" className="hover:text-neon-cyan transition block">
+                Omkar Hundre
+              </Link>
+
+              <Link to="/developers" className="hover:text-neon-cyan transition block">
+                Bhuvan
+              </Link>
+
+              <Link to="/developers" className="hover:text-neon-cyan transition block">
+                Kishan
+              </Link>
+
+              <Link to="/developers" className="hover:text-neon-cyan transition block">
+                Vivek
+              </Link>
+
+            </div>
+          </div>
+
+          {/* ACADEMIC TEAM */}
 
 
-         
+          {/* CONTACT */}
+          <div>
+            <h3 className="text-sm font-semibold tracking-widest text-white mb-3">
+              CONTACT
+            </h3>
+            <div className="w-10 h-[2px] bg-neon-cyan mb-4" />
+
+            <div className="space-y-2 text-sm text-white/60">
+              <p>Jain College Of Engineering, Belagavi</p>
+              <p>+91 8412411192</p>
+              <a
+                href="https://odyssey-2k25.vercel.app"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-neon-cyan transition"
+              >
+                Info@Jainbgm.in
+              </a>
+            </div>
+
+
+          </div>
+          {/* Brand */}
+
+
+
+
+
         </div>
 
         {/* Bottom bar */}
@@ -50,7 +152,7 @@ export default function Footer() {
             © 2026 ODYSSEY — All rights reserved
           </p>
           <p className="font-mono text-xs text-white/20">
-           Built with passion, for the passionate
+            Built with passion, for the passionate
           </p>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-pulse" />
@@ -60,6 +162,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </footer>
+    </footer >
   );
 }

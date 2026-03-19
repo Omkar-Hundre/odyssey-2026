@@ -12,44 +12,72 @@ import homeBg from "../assets/home_bg.mp4";
 import introVideo from "../assets/home_bg3.mp4";
 import introAudio from "../assets/intro.mp3";
 
+// Local Logos
+import chatgptIcon from "../assets/logos/ChatGPT.jpeg";
+import midjourneyIcon from "../assets/logos/Midjourney.jpeg";
+import geminiIcon from "../assets/logos/Gemini.jpeg";
+import claudeIcon from "../assets/logos/Claude.jpeg";
+import copilotIcon from "../assets/logos/GitHub_Copilot.jpeg";
+import jasperIcon from "../assets/logos/Jasper.jpeg";
+import perplexityIcon from "../assets/logos/Perplexity.jpeg";
+import elevenlabsIcon from "../assets/logos/ElevenLabs.jpeg";
+import runwayIcon from "../assets/logos/Runway.jpeg";
+import notionIcon from "../assets/logos/Notion.jpeg";
+import deeplIcon from "../assets/logos/DeepL.jpeg";
+import fireflyIcon from "../assets/logos/Firefly.jpeg";
+import mistralIcon from "../assets/logos/Mistral.jpeg";
+import cursorIcon from "../assets/logos/cursor.jpeg";
+import grammarlyIcon from "../assets/logos/Grammarly.jpeg";
+import canvaIcon from "../assets/logos/Canva.jpeg";
+import otterIcon from "../assets/logos/Otterai.jpeg";
+import murfIcon from "../assets/logos/Murf.jpeg";
+import synthesiaIcon from "../assets/logos/Synthesia.jpeg";
+import phindIcon from "../assets/logos/Phind_Icon.jpeg";
+import firefliesIcon from "../assets/logos/Fireflies.jpeg";
+import replitIcon from "../assets/logos/Replit.jpeg";
+import openaiIcon from "../assets/logos/OpenAI.jpeg";
+
+
 const AI_TOOLS = [
-  { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com" },
-  { name: "Midjourney", category: "Art", color: "from-purple-500 to-pink-500", logo: "midjourney.com" },
-  { name: "Gemini", category: "Multimodal", color: "from-blue-500 to-cyan-400", logo: "google.com" },
-  { name: "Claude", category: "Reasoning", color: "from-orange-400 to-red-500", logo: "anthropic.com" },
+  { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com", localLogo: chatgptIcon },
+  { name: "Midjourney", category: "Art", color: "from-purple-500 to-pink-500", logo: "midjourney.com", localLogo: midjourneyIcon },
+  { name: "Gemini", category: "Multimodal", color: "from-blue-500 to-cyan-400", logo: "google.com", localLogo: geminiIcon },
+  { name: "Claude", category: "Reasoning", color: "from-orange-400 to-red-500", logo: "anthropic.com", localLogo: claudeIcon },
   { name: "Stable Diffusion", category: "Generative", color: "from-indigo-500 to-purple-400", logo: "stability.ai" },
-  { name: "GitHub Copilot", category: "Coding", color: "from-slate-700 to-slate-900", logo: "github.com" },
-  { name: "Jasper", category: "Writing", color: "from-blue-400 to-indigo-600", logo: "jasper.ai" },
-  { name: "Perplexity", category: "Search", color: "from-cyan-400 to-blue-500", logo: "perplexity.ai" },
-  { name: "ElevenLabs", category: "Voice", color: "from-yellow-400 to-orange-500", logo: "elevenlabs.io" },
-  { name: "Runway", category: "Video", color: "from-pink-500 to-rose-600", logo: "runwayml.com" },
-  { name: "Notion AI", category: "Productivity", color: "from-gray-600 to-black", logo: "notion.so" },
-  { name: "DeepL", category: "Translation", color: "from-blue-800 to-blue-900", logo: "deepl.com" },
-  { name: "Firefly", category: "Design", color: "from-orange-500 to-red-600", logo: "adobe.com" },
-  { name: "Sora", category: "Video", color: "from-cyan-500 to-blue-600", logo: "openai.com" },
-  { name: "Mistral", category: "LLM", color: "from-orange-400 to-yellow-500", logo: "mistral.ai" },
-  { name: "Cursor", category: "IDE", color: "from-blue-500 to-indigo-600", logo: "cursor.com" },
-  { name: "Grammarly", category: "Editing", color: "from-green-500 to-emerald-600", logo: "grammarly.com" },
-  { name: "Canva Magic", category: "Design", color: "from-purple-400 to-blue-500", logo: "canva.com" },
-  { name: "Otter.ai", category: "Meetings", color: "from-blue-400 to-cyan-400", logo: "otter.ai" },
+  { name: "GitHub Copilot", category: "Coding", color: "from-slate-700 to-slate-900", logo: "github.com", localLogo: copilotIcon },
+  { name: "Jasper", category: "Writing", color: "from-blue-400 to-indigo-600", logo: "jasper.ai", localLogo: jasperIcon },
+  { name: "Perplexity", category: "Search", color: "from-cyan-400 to-blue-500", logo: "perplexity.ai", localLogo: perplexityIcon },
+  { name: "ElevenLabs", category: "Voice", color: "from-yellow-400 to-orange-500", logo: "elevenlabs.io", localLogo: elevenlabsIcon },
+  { name: "Runway", category: "Video", color: "from-pink-500 to-rose-600", logo: "runwayml.com", localLogo: runwayIcon },
+  { name: "Notion AI", category: "Productivity", color: "from-gray-600 to-black", logo: "notion.so", localLogo: notionIcon },
+  { name: "DeepL", category: "Translation", color: "from-blue-800 to-blue-900", logo: "deepl.com", localLogo: deeplIcon },
+  { name: "Firefly", category: "Design", color: "from-orange-500 to-red-600", logo: "adobe.com", localLogo: fireflyIcon },
+  { name: "Sora", category: "Video", color: "from-cyan-500 to-blue-600", logo: "openai.com", localLogo: openaiIcon },
+  { name: "Mistral", category: "LLM", color: "from-orange-400 to-yellow-500", logo: "mistral.ai", localLogo: mistralIcon },
+  { name: "Cursor", category: "IDE", color: "from-blue-500 to-indigo-600", logo: "cursor.com", localLogo: cursorIcon },
+  { name: "Grammarly", category: "Editing", color: "from-green-500 to-emerald-600", logo: "grammarly.com", localLogo: grammarlyIcon },
+  { name: "Canva Magic", category: "Design", color: "from-purple-400 to-blue-500", logo: "canva.com", localLogo: canvaIcon },
+  { name: "Otter.ai", category: "Meetings", color: "from-blue-400 to-cyan-400", logo: "otter.ai", localLogo: otterIcon },
   { name: "Descript", category: "Audio/Video", color: "from-descript.com", logo: "descript.com" },
-  { name: "Murf", category: "TTS", color: "from-purple-600 to-indigo-700", logo: "murf.ai" },
-  { name: "Synthesia", category: "Avatars", color: "from-indigo-500 to-blue-600", logo: "synthesia.io" },
-  { name: "Phind", category: "Search", color: "from-blue-400 to-emerald-500", logo: "phind.com" },
+  { name: "Murf", category: "TTS", color: "from-purple-600 to-indigo-700", logo: "murf.ai", localLogo: murfIcon },
+  { name: "Synthesia", category: "Avatars", color: "from-indigo-500 to-blue-600", logo: "synthesia.io", localLogo: synthesiaIcon },
+  { name: "Phind", category: "Search", color: "from-blue-400 to-emerald-500", logo: "phind.com", localLogo: phindIcon },
   { name: "Grok", category: "LLM", color: "from-gray-800 to-black", logo: "x.ai" },
-  { name: "Dall-E", category: "Image", color: "from-orange-500 to-yellow-500", logo: "openai.com" },
-  { name: "Whisper", category: "Speech", color: "from-cyan-500 to-emerald-500", logo: "openai.com" },
+  { name: "Dall-E", category: "Image", color: "from-orange-500 to-yellow-500", logo: "openai.com", localLogo: openaiIcon },
+  { name: "Whisper", category: "Speech", color: "from-cyan-500 to-emerald-500", logo: "openai.com", localLogo: openaiIcon },
   { name: "Copy.ai", category: "Marketing", color: "from-blue-500 to-indigo-500", logo: "copy.ai" },
-  { name: "Fireflies", category: "Productivity", color: "from-cyan-400 to-blue-600", logo: "fireflies.ai" },
+  { name: "Fireflies", category: "Productivity", color: "from-cyan-400 to-blue-600", logo: "fireflies.ai", localLogo: firefliesIcon },
   { name: "Tabnine", category: "Coding", color: "from-indigo-600 to-purple-600", logo: "tabnine.com" },
-  { name: "Replit Ghost", category: "Coding", color: "from-red-500 to-orange-600", logo: "replit.com" },
+  { name: "Replit Ghost", category: "Coding", color: "from-red-500 to-orange-600", logo: "replit.com", localLogo: replitIcon },
 ];
 
-const CATEGORIES = ["All", "Central Events", "CSE Dept.", "AI/ML Dept.", "ECE Dept.", "Mechanical Dept.", "MBA", "MCA"];
+
+
+const CATEGORIES = ["All", "Central Events","Civil Dept.", "CSE Dept.", "AI/ML Dept.",  "ECE Dept.", "EEE Dept.","MBA", "MCA", "Mechanical Dept.", ];
 
 function ToolLogo({ tool }) {
   const [error, setError] = useState(false);
-  const logoUrl = `https://logo.clearbit.com/${tool.logo}`;
+  const logoUrl = tool.localLogo || tool.logoUrl || `https://logo.clearbit.com/${tool.logo}`;
 
   if (error || !tool.logo) {
     return (
