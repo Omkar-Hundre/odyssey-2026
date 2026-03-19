@@ -29,6 +29,14 @@ const developers = [
   },
   {
     id: 3,
+
+
+
+
+
+
+
+    
     name: "Bhuvan Yerraguntla",
     role: "FrontEnd Developer",
     image: bhuvanImg,
