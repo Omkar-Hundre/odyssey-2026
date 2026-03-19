@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 import homeBg from "../assets/home_bg.mp4";
+import introVideo from "../assets/home_bg2.mp4";
 
 const AI_TOOLS = [
   { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com" },
@@ -154,6 +155,14 @@ export default function Home() {
   const { currentUser, userProfile } = useAuth();
   const [activeDay, setActiveDay] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [showIntro, setShowIntro] = useState(true);
+
+
+  const handleVideoEnd = () => {
+    sessionStorage.setItem("introPlayed", "true");
+    setShowIntro(false);
+  };
+
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -210,7 +219,31 @@ export default function Home() {
   }, [activeCategory, events]);
 
   return (
+
     <div className="min-h-screen bg-[#020617] text-white">
+      {showIntro && (
+        <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+
+          <video
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            className="w-full h-full object-cover"
+          >
+            <source src={introVideo} type="video/mp4" />
+          </video>
+
+          {/* Skip Button */}
+          <button
+            onClick={handleVideoEnd}
+            className="absolute bottom-10 right-10 px-5 py-2 bg-white/10 border border-white/20 text-white text-sm rounded-lg backdrop-blur hover:bg-white/20 transition"
+          >
+            Skip →
+          </button>
+
+        </div>
+      )}
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-start justify-start overflow-hidden">
@@ -239,7 +272,7 @@ export default function Home() {
           </div>
 
           <div className="relative group">
-            <h1 className="gloock-regular text-transparent text-[11vw] sm:text-6xl md:text-7xl lg:text-9xl bg-clip-text bg-gradient-to-b from-white via-[#7dcffc] to-[#d81d55] drop-shadow-[0_0_60px_rgba(59,130,246,0.6)] py-4 transition-all duration-500 group-hover:scale-[1.02] tracking-wider sm:tracking-normal">
+            <h1 className="gloock-regular text-transparent text-[11vw] sm:text-7xl md:text-7xl lg:text-9xl bg-clip-text bg-gradient-to-b from-white via-[#7dcffc] to-[#d81d55] drop-shadow-[0_0_60px_rgba(59,130,246,0.6)] py-4 transition-all duration-500 group-hover:scale-[1.02] tracking-wider sm:tracking-normal">
               ODYSSEY
             </h1>
             {/* Subtle light streak */}
