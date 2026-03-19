@@ -263,7 +263,7 @@ export default function Home() {
       result = result.filter((e) => e.category === activeCategory);
     }
     // Show only first 5 events + room for View More card
-    setFilteredEvents(result.slice(0, 5));
+    setFilteredEvents(result.slice(0, 3));
   }, [activeCategory, events]);
 
   return (
