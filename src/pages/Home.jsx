@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 import homeBg from "../assets/home_bg.mp4";
-import introVideo from "../assets/home_bg2.mp4";
+import introVideo from "../assets/home_bg3.mp4";
 import introAudio from "../assets/intro.mp3";
 
 const AI_TOOLS = [
