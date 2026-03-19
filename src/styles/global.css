@@ -3,11 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.gloock-regular {
-  font-family: "Gloock", serif;
+.tapestry-regular {
+  font-family: "Tapestry", serif;
   font-weight: 400;
   font-style: normal;
 }
+
 
 @layer base {
   * {
@@ -206,8 +207,80 @@
   transform: translateY(0);
   transition: opacity 400ms, transform 400ms;
 }
-@keyframes glowMove {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+
+.marquee {
+  overflow: hidden;
+  position: relative;
+  
+}
+
+.marquee-track-left,
+.marquee-track-right {
+  display: flex;
+  width: max-content;
+}
+
+/* CARD BASE */
+.marquee-item {
+  flex: 0 0 auto;
+  min-width: 160px;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  margin-right: 14px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+
+  transition: all 0.35s ease;
+}
+
+/* PREMIUM GLOW (bottom row) */
+.marquee-item.glow {
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.15);
+}
+
+/* HOVER EFFECT */
+.marquee-item:hover {
+  transform: translateY(-6px) scale(1.05);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+/* SCROLL DIRECTIONS */
+.marquee-track-left {
+  animation: scroll-left 100s linear infinite;
+}
+
+.marquee-track-right {
+  animation: scroll-right 100s linear infinite;
+}
+
+/* KEYFRAMES */
+@keyframes scroll-left {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+/* RESPONSIVE SPEED */
+@media (min-width: 768px) {
+  .marquee-track-left,
+  .marquee-track-right {
+    animation-duration: 100ss;
+  }
+}
+
+/* PAUSE ON HOVER */
+.marquee:hover .marquee-track-left,
+.marquee:hover .marquee-track-right {
+  animation-play-state: paused;
 }

@@ -294,105 +294,135 @@ export default function Home() {
 
 
         {/* CENTRAL CONTENT */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-30 text-center px-4 pt-32">
-          <div className="mb-6 animate-fade-in">
-            <span className="font-mono text-xs md:text-sm tracking-[0.4em] text-cyan-400 font-medium uppercase drop-shadow-sm">
+        <div className="absolute inset-0 flex flex-col items-center justify-start z-30 text-center px-4 pt-20 md:pt-32">
+
+          {/* College Name */}
+          <div className="mb-4 md:mb-6 animate-fade-in">
+            <span className="font-mono text-[10px] sm:text-xs md:text-sm 
+    tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.35em] 
+    font-medium uppercase 
+    bg-gradient-to-r from-cyan-300 via-indigo-400 to-purple-400 
+    bg-clip-text text-transparent 
+    opacity-90">
               Jain College Of Engineering, Belagavi
             </span>
           </div>
 
-          <div className="relative group">
-            <h1 className="gloock-regular text-transparent text-[11vw] sm:text-7xl md:text-7xl lg:text-9xl bg-clip-text bg-gradient-to-b from-white via-[#7dcffc] to-[#d81d55] drop-shadow-[0_0_60px_rgba(59,130,246,0.6)] py-4 transition-all duration-500 group-hover:scale-[1.02] tracking-wider sm:tracking-normal">
-              ODYSSEY
-            </h1>
-            {/* Subtle light streak */}
-          </div>
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              backgroundPosition: ["0% 50%", "100% 50%"]
+            }}
+            transition={{
+              duration: 1,
+              backgroundPosition: {
+                duration: 6,
+                repeat: Infinity,
+                ease: "linear"
+              }
+            }}
+            style={{ backgroundSize: "200% 200%" }}
+            className="tapestry-regular text-transparent 
+    text-[14vw] sm:text-6xl md:text-7xl lg:text-9xl 
+    bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-500 to-pink-500
+    drop-shadow-[0_0_50px_rgba(99,102,241,0.6)]
+    py-2 md:py-4 
+    tracking-[0.02em] sm:tracking-[0.05rem] md:tracking-[0.08rem] lg:tracking-[0.12rem]">
+            ODYSSEY
+          </motion.h1>
 
-          <div className="mt-8 flex flex-col md:flex-row items-center gap-4 md:gap-16">
+          {/* Subtitle */}
+          <div className="mt-6 md:mt-8 flex flex-col md:flex-row items-center gap-3 md:gap-16">
+
             <div className="flex flex-col items-center">
-              <p className="font-mono text-[10px] md:text-xs tracking-[0.5em] text-white/70 uppercase">
+              <p className="font-mono text-[9px] sm:text-[10px] md:text-xs 
+      tracking-[0.25em] md:tracking-[0.5em] uppercase 
+      bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-400 
+      bg-clip-text text-transparent">
                 NATIONAL LEVEL
               </p>
-              <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mt-2"></div>
+              <div className="h-[1px] w-6 md:w-8 
+      bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent 
+      mt-2"></div>
             </div>
 
-            <div className="hidden md:block w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+            <div className="hidden md:block w-px h-8 
+    bg-gradient-to-b from-transparent via-indigo-400/30 to-transparent">
+            </div>
 
             <div className="flex flex-col items-center">
-              <p className="font-mono text-[10px] md:text-xs tracking-[0.5em] text-white/70 uppercase">
+              <p className="font-mono text-[9px] sm:text-[10px] md:text-xs 
+      tracking-[0.25em] md:tracking-[0.5em] uppercase 
+      bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 
+      bg-clip-text text-transparent">
                 TECHNO CULTURAL FEST
               </p>
-              <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent mt-2"></div>
+              <div className="h-[1px] w-6 md:w-8 
+      bg-gradient-to-r from-transparent via-purple-400/60 to-transparent 
+      mt-2"></div>
             </div>
-          </div>
 
-          <div className="mt-12 flex flex-wrap justify-center gap-6 animate-fade-in-up">
-            <Link to="/events" className="btn-neon-filled group">
+          </div>
+          {/* Buttons */}
+          <div className="mt-8 md:mt-12 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
+            <Link to="/events" className="btn-neon-filled w-full sm:w-auto">
               <span className="relative z-10 font-bold">Register Now</span>
             </Link>
-            <button className="btn-neon group">
+            <button className="btn-neon w-full sm:w-auto">
               <span className="relative z-10 font-bold">Rule Book</span>
             </button>
           </div>
 
-          {/* AI Tools Marquee */}
-          <div className="mt-20 w-full overflow-hidden py-10 relative">
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-20 pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-20 pointer-events-none"></div>
+          {/* Marquee */}
+         <div className="mt-12 md:mt-20 w-screen max-w-full overflow-hidden py-8 relative left-1/2 -translate-x-1/2">
 
-            <motion.div
-              className="flex gap-8 whitespace-nowrap"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ duration: scrollDuration, repeat: Infinity, ease: "linear" }}
-            >
-              {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
-                <div
-                  key={idx}
-                  className="inline-flex items-center gap-6 px-10 py-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group cursor-default"
-                >
-                  <ToolLogo tool={tool} />
+  {/* Softer Fade Edges */}
+  <div className="absolute left-0 top-0 bottom-0 w-10 md:w-20 bg-gradient-to-r from-[#020617] to-transparent z-20"></div>
+  <div className="absolute right-0 top-0 bottom-0 w-10 md:w-20 bg-gradient-to-l from-[#020617] to-transparent z-20"></div>
 
-                  <div>
-                    <div className={`text-[10px] font-mono font-bold tracking-[0.2em] uppercase mb-1 bg-clip-text text-transparent bg-gradient-to-r ${tool.color}`}>
-                      {tool.category}
-                    </div>
-                    <div className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
-                      {tool.name}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-
-            <motion.div
-              className="flex gap-8 whitespace-nowrap mt-4"
-              animate={{ x: ["-50%", "0%"] }}
-              transition={{ duration: scrollDuration, repeat: Infinity, ease: "linear" }}
-            >
-              {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
-                <div
-                  key={idx}
-                  className="inline-flex items-center gap-6 px-10 py-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group cursor-default"
-                >
-                  {/* Styled Logo Placeholder */}
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/20 group-hover:scale-110 transition-transform duration-300`}>
-                    {tool.name.charAt(0)}
-                  </div>
-
-                  <div>
-                    <div className={`text-[10px] font-mono font-bold tracking-[0.2em] uppercase mb-1 bg-clip-text text-transparent bg-gradient-to-r ${tool.color}`}>
-                      {tool.category}
-                    </div>
-                    <div className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
-                      {tool.name}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+  {/* TOP ROW */}
+  <div className="marquee">
+    <div className="marquee-track-left">
+      {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
+        <div key={idx} className="marquee-item group">
+          <ToolLogo tool={tool} />
+          <div>
+            <div className="text-[10px] font-mono uppercase text-white/40">
+              {tool.category}
+            </div>
+            <div className="text-sm md:text-base font-semibold text-white/90">
+              {tool.name}
+            </div>
           </div>
         </div>
+      ))}
+    </div>
+  </div>
 
+  {/* BOTTOM ROW */}
+  <div className="marquee mt-6">
+    <div className="marquee-track-right">
+      {[...AI_TOOLS, ...AI_TOOLS].map((tool, idx) => (
+        <div key={idx} className="marquee-item glow group">
+          <ToolLogo tool={tool} />
+          <div>
+            <div className="text-[10px] font-mono uppercase text-white/40">
+              {tool.category}
+            </div>
+            <div className="text-sm md:text-base font-semibold text-white">
+              {tool.name}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</div>
+        </div>
       </section>
 
       {/* EVENTS CATEGORIZED */}
