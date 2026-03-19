@@ -37,14 +37,14 @@ const developers = [
   {
     id: 4,
     name: "Kishan",
-    role: "UI/UX Designer",
+    role: "UI/UX & Database Designer",
     image: kishanImg,
     links: { github: "github.com/Kishan0029", linkedin: "https://www.linkedin.com/in/kishan-revankar-97b428306?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", instagram: "https://www.instagram.com/kishan_revankar_29?utm_source=qr" },
   },
   {
     id: 4,
     name: "Vivek",
-    role: "UI/UX Designer",
+    role: "UI/UX & Database Designer",
     image: vivekImg,
     links: { github: "https://github.com/vivek-vishwakarma132", linkedin: "https://www.linkedin.com/in/vivek-sharma-34b220385?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", instagram: "https://www.instagram.com/vivekrs.007?igsh=ODAwdXllMXI3MzRk" },
   },
