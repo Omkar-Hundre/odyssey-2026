@@ -52,10 +52,37 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000); // 3 seconds for the original SVG animation
-    return () => clearTimeout(timer);
+    const isHomeIntro = window.location.pathname === '/';
+    let minTimePassed = false;
+    let videoReady = !isHomeIntro;
+    let fallbackTimer, startVideoTimer;
+
+    const tryHideSplash = () => {
+      if (minTimePassed && videoReady) {
+        setShowSplash(false);
+      }
+    };
+
+    const minTimer = setTimeout(() => {
+      minTimePassed = true;
+      tryHideSplash();
+    }, 3000);
+
+    const handleIntroReady = () => {
+      videoReady = true;
+      tryHideSplash();
+    };
+
+    if (isHomeIntro) {
+      window.addEventListener('introVideoReady', handleIntroReady);
+      fallbackTimer = setTimeout(handleIntroReady, 8000);
+    }
+
+    return () => {
+      clearTimeout(minTimer);
+      clearTimeout(fallbackTimer);
+      window.removeEventListener('introVideoReady', handleIntroReady);
+    };
   }, []);
 
   return (
@@ -68,7 +95,7 @@ export default function App() {
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="relative z-[200]"
+              className="relative z-[99999]"
             >
               <Loader />
             </motion.div>

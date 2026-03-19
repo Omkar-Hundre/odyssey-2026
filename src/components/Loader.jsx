@@ -5,7 +5,7 @@ export default function Loader() {
   const letters = "ODYSSEY".split("");
   
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#080f18]">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#080f18]">
       <div className="relative flex flex-col items-center">
         
         {/* Animated Geometric Decoration */}
