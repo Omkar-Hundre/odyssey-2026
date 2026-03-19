@@ -73,7 +73,7 @@ const AI_TOOLS = [
 
 
 
-const CATEGORIES = ["All", "Central Events","Civil Dept.", "CSE Dept.", "AI/ML Dept.",  "ECE Dept.", "EEE Dept.","MBA", "MCA", "Mechanical Dept.", ];
+const CATEGORIES = ["All", "Central Events", "Civil Dept.", "CSE Dept.", "AI/ML Dept.", "ECE Dept.", "EEE Dept.", "MBA", "MCA", "Mechanical Dept.",];
 
 function ToolLogo({ tool }) {
   const [error, setError] = useState(false);
@@ -401,9 +401,15 @@ export default function Home() {
             <Link to="/events" className="btn-neon-filled w-full sm:w-auto">
               <span className="relative z-10 font-bold">Register Now</span>
             </Link>
-            <button className="btn-neon w-full sm:w-auto">
+
+            <a
+              href="https://drive.google.com/file/d/1F2UPdhmeuprSyw-UsxQ59TYDATHwN-EH/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-neon w-full sm:w-auto text-center"
+            >
               <span className="relative z-10 font-bold">Rule Book</span>
-            </button>
+            </a>
           </div>
 
           {/* AI Tools Marquee */}

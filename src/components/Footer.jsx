@@ -46,7 +46,7 @@ export default function Footer() {
             </h3>
             <div className="w-10 h-[2px] bg-neon-cyan mb-4" />
             <a
-              href="#"
+              href="https://drive.google.com/file/d/1F2UPdhmeuprSyw-UsxQ59TYDATHwN-EH/view?usp=sharing"
               className="text-sm text-white/60 hover:text-neon-cyan transition"
             >
               RULEBOOK ODYSSEY – Download
