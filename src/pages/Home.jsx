@@ -10,6 +10,7 @@ import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 import homeBg from "../assets/home_bg.mp4";
 import introVideo from "../assets/home_bg2.mp4";
+import introAudio from "../assets/intro.mp3";
 
 const AI_TOOLS = [
   { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com" },
@@ -158,6 +159,7 @@ export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
 
 
+
   const handleVideoEnd = () => {
     sessionStorage.setItem("introPlayed", "true");
     setShowIntro(false);
@@ -176,6 +178,8 @@ export default function Home() {
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const audioRef = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
 
   // Fetch Events
   useEffect(() => {
@@ -190,6 +194,20 @@ export default function Home() {
     });
     return () => unsubscribe();
   }, []);
+
+  const toggleSound = () => {
+    if (!audioRef.current) return;
+
+    if (soundOn) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    } else {
+      audioRef.current.volume = 0.7;
+      audioRef.current.play().catch(() => { });
+    }
+
+    setSoundOn(!soundOn);
+  };
 
   // FETCH USER REGISTRATIONS (REALTIME)
   useEffect(() => {
@@ -222,8 +240,9 @@ export default function Home() {
 
     <div className="min-h-screen bg-[#020617] text-white">
       {showIntro && (
-        <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+        <div className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-opacity duration-700 ${showIntro ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
 
+          {/* VIDEO (always muted) */}
           <video
             autoPlay
             muted
@@ -234,7 +253,18 @@ export default function Home() {
             <source src={introVideo} type="video/mp4" />
           </video>
 
-          {/* Skip Button */}
+          {/* AUDIO */}
+          <audio ref={audioRef} src={introAudio} loop />
+
+          {/* SOUND TOGGLE */}
+          <button
+            onClick={toggleSound}
+            className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 border border-white/20 backdrop-blur flex items-center justify-center text-white text-lg hover:bg-white/20 transition"
+          >
+            {soundOn ? "🔊" : "🔇"}
+          </button>
+
+          {/* SKIP */}
           <button
             onClick={handleVideoEnd}
             className="absolute bottom-10 right-10 px-5 py-2 bg-white/10 border border-white/20 text-white text-sm rounded-lg backdrop-blur hover:bg-white/20 transition"
