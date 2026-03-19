@@ -9,8 +9,8 @@ import { useAuth } from "../context/AuthContext";
 import EventCard from "../components/EventCard";
 import { DEMO_EVENTS } from "../utils/helpers";
 import homeBg from "../assets/home_bg.mp4";
-import introVideo from "../assets/home_bg2.mp4";
-import introAudio from "../assets/intro.mp3";
+import introVideo from "../assets/home_bg2_compressed.mp4";
+import introAudio from "../assets/intro_compressed.mp3";
 
 const AI_TOOLS = [
   { name: "ChatGPT", category: "LLM", color: "from-emerald-400 to-cyan-500", logo: "openai.com" },
@@ -157,11 +157,13 @@ export default function Home() {
   const [activeDay, setActiveDay] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showIntro, setShowIntro] = useState(true);
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
 
 
 
   const handleVideoEnd = () => {
-    sessionStorage.setItem("introPlayed", "true");
     setShowIntro(false);
   };
 
@@ -178,8 +180,6 @@ export default function Home() {
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef(null);
-  const [soundOn, setSoundOn] = useState(false);
 
   // Fetch Events
   useEffect(() => {
@@ -239,14 +239,23 @@ export default function Home() {
   return (
 
     <div className="min-h-screen bg-[#020617] text-white">
-      {showIntro && (
-        <div className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-opacity duration-700 ${showIntro ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            key="intro-overlay"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
+          >
 
           {/* VIDEO (always muted) */}
           <video
+            ref={videoRef}
             autoPlay
             muted
             playsInline
+            onCanPlayThrough={() => window.dispatchEvent(new Event('introVideoReady'))}
             onEnded={handleVideoEnd}
             className="w-full h-full object-cover"
           >
@@ -272,8 +281,9 @@ export default function Home() {
             Skip →
           </button>
 
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-start justify-start overflow-hidden">
